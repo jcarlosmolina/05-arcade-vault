@@ -8,14 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Arcade Vault — a platform for playing games online and competing for high scores (per README.md, in Spanish). The repo is currently a fresh, unmodified `create-next-app` scaffold: no app-specific routes, components, or data layer exist yet beyond the default boilerplate in `app/`.
 
-## Commands
-
-- `npm run dev` — start the dev server (Next.js 16 with Turbopack by default)
-- `npm run build` — production build
-- `npm run start` — run the production build
-- `npm run lint` — ESLint (flat config in `eslint.config.mjs`, extends `next/core-web-vitals` + `next/typescript`)
-
 There is no test runner configured in this repo yet.
+
+## Skills
+Always use /frontend-design to design the user interface.
 
 ## Architecture
 
