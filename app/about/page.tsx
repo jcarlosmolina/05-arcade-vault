@@ -79,13 +79,16 @@ export default function About() {
 
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [shake, setShake] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [sentName, setSentName] = useState("");
 
   const triggerShake = () => {
     setShake(true);
     setTimeout(() => setShake(false), 400);
   };
 
-  const onSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       triggerShake();
@@ -95,6 +98,33 @@ export default function About() {
       triggerShake();
       return;
     }
+
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setErrorMessage(data?.error || "No se pudo enviar el mensaje. Intenta de nuevo.");
+        setStatus("error");
+        return;
+      }
+      setSentName(form.name.trim());
+      setStatus("sent");
+    } catch {
+      setErrorMessage("Error de red. Revisa tu conexión e intenta de nuevo.");
+      setStatus("error");
+    }
+  };
+
+  const sendAnother = () => {
+    setStatus("idle");
+    setForm({ name: "", email: "", message: "" });
+    setSentName("");
+    setErrorMessage("");
   };
 
   return (
@@ -154,35 +184,78 @@ export default function About() {
           </div>
 
           <form className={"contact-form" + (shake ? " shake" : "")} onSubmit={onSubmit}>
-            <div className="field">
-              <label>NOMBRE</label>
-              <input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="px_kai"
-              />
-            </div>
-            <div className="field">
-              <label>CORREO ELECTRÓNICO</label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="jugador@vault.gg"
-              />
-            </div>
-            <div className="field">
-              <label>MENSAJE</label>
-              <textarea
-                rows={5}
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-                placeholder="Cuéntanos qué tienes en mente…"
-              ></textarea>
-            </div>
-            <button className="btn xl press" type="submit" style={{ width: "100%" }}>
-              ▶ ENVIAR MENSAJE
-            </button>
+            {status === "sent" ? (
+              <div className="terminal-success">
+                <div className="term-bar">
+                  <span className="dot r"></span>
+                  <span className="dot y"></span>
+                  <span className="dot g"></span>
+                  <span className="term-title">VAULT-OS // TERMINAL</span>
+                </div>
+                <div className="term-body">
+                  <div className="line">
+                    <span className="prompt">vault@arcade:~$</span> ./send_message --to=team
+                  </div>
+                  <div className="line dim">[OK] Conectando con servidor…</div>
+                  <div className="line dim">[OK] Validando contenido…</div>
+                  <div className="line dim">[OK] Transmitiendo paquete…</div>
+                  <div className="line success">
+                    &gt; MENSAJE RECIBIDO. TE RESPONDEREMOS PRONTO. GRACIAS, {sentName.toUpperCase()}.
+                    <span className="caret">_</span>
+                  </div>
+                  <div style={{ marginTop: 18 }}>
+                    <button className="btn ghost" type="button" onClick={sendAnother}>
+                      ENVIAR OTRO MENSAJE
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="field">
+                  <label>NOMBRE</label>
+                  <input
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="px_kai"
+                    disabled={status === "sending"}
+                  />
+                </div>
+                <div className="field">
+                  <label>CORREO ELECTRÓNICO</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="jugador@vault.gg"
+                    disabled={status === "sending"}
+                  />
+                </div>
+                <div className="field">
+                  <label>MENSAJE</label>
+                  <textarea
+                    rows={5}
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    placeholder="Cuéntanos qué tienes en mente…"
+                    disabled={status === "sending"}
+                  ></textarea>
+                </div>
+                {status === "error" && (
+                  <p className="contact-sub" style={{ color: "var(--magenta)", marginTop: 0 }}>
+                    {errorMessage}
+                  </p>
+                )}
+                <button
+                  className="btn xl press"
+                  type="submit"
+                  style={{ width: "100%" }}
+                  disabled={status === "sending"}
+                >
+                  {status === "sending" ? "ENVIANDO…" : "▶ ENVIAR MENSAJE"}
+                </button>
+              </>
+            )}
           </form>
         </div>
       </section>
