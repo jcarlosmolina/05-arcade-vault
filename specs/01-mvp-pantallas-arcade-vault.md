@@ -1,6 +1,6 @@
 # SPEC 01 — MVP visual de las pantallas de Arcade Vault
 
-> **Status:** Approved
+> **Status:** Completed
 > **Depends on:** ninguna
 > **Date:** 2026-09-14
 > **Objective:** Portar las 5 pantallas del prototipo estático en `references/templates/` (Biblioteca, Detalle, Reproductor, Salón de la Fama, Auth) a rutas reales de Next.js App Router, en TypeScript/React, con datos ficticios y sin implementar lógica de ningún juego real.
@@ -96,18 +96,18 @@ Esto reemplaza el estado `route`/`user` que en el template vivía en `app.jsx`: 
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` arranca sin errores de compilación ni de consola en ninguna de las 5 rutas.
-- [ ] `/` muestra el grid de 8 juegos; buscar "caída" deja solo ese juego; filtrar por "SHOOTER" muestra solo Invasores y Rocas; una búsqueda sin resultados muestra "NO HAY RESULTADOS".
-- [ ] Hacer clic en una tarjeta o en su botón "JUGAR" navega a `/juegos/<id>` con la información de ese juego exacto (título, descripción, stats, tabla de puntuaciones).
-- [ ] En `/juegos/<id>`, pulsar "JUGAR AHORA" navega a `/juegos/<id>/jugar`; pulsar "VOLVER AL VAULT" navega a `/`.
-- [ ] En `/juegos/<id>/jugar`, la puntuación aumenta automáticamente mientras no está en pausa ni terminado; "PAUSA" detiene el incremento y "REANUDAR" lo retoma; "FIN" abre el modal de fin de partida con la puntuación final.
-- [ ] Guardar la puntuación en el modal la persiste en `localStorage` (`av_scores`) y muestra el mensaje "PUNTUACIÓN GUARDADA"; "JUGAR DE NUEVO" reinicia el HUD a sus valores iniciales.
-- [ ] En `/auth`, iniciar sesión (o entrar como invitado) redirige a `/` y el `Nav` muestra el nombre de usuario en vez de "Iniciar Sesión"; recargar la página mantiene la sesión iniciada.
-- [ ] Cerrar sesión desde el `Nav` vuelve a mostrar el botón "Iniciar Sesión" y borra `av_user` de `localStorage`.
-- [ ] En `/salon`, cambiar de tab (juego) actualiza el podio y la tabla; si hay sesión iniciada, aparece la fila "TU MEJOR MARCA EN <JUEGO>".
-- [ ] El enlace activo en el `Nav` refleja la sección actual (Biblioteca se marca activo también en `/juegos/*`).
-- [ ] En una ventana de ~400px de ancho, el `Nav` muestra el menú hamburguesa y ninguna pantalla produce scroll horizontal.
-- [ ] Navegar a `/juegos/id-inexistente` muestra la página 404 de Next.js en vez de un error de JavaScript.
+- [X] `npm run dev` arranca sin errores de compilación ni de consola en ninguna de las 5 rutas.
+- [X] `/` muestra el grid de 8 juegos; buscar "caída" deja solo ese juego; filtrar por "SHOOTER" muestra solo Invasores y Rocas; una búsqueda sin resultados muestra "NO HAY RESULTADOS".
+- [X] Hacer clic en una tarjeta o en su botón "JUGAR" navega a `/juegos/<id>` con la información de ese juego exacto (título, descripción, stats, tabla de puntuaciones).
+- [X] En `/juegos/<id>`, pulsar "JUGAR AHORA" navega a `/juegos/<id>/jugar`; pulsar "VOLVER AL VAULT" navega a `/`.
+- [X] En `/juegos/<id>/jugar`, la puntuación aumenta automáticamente mientras no está en pausa ni terminado; "PAUSA" detiene el incremento y "REANUDAR" lo retoma; "FIN" abre el modal de fin de partida con la puntuación final.
+- [X] Guardar la puntuación en el modal la persiste en `localStorage` (`av_scores`) y muestra el mensaje "PUNTUACIÓN GUARDADA"; "JUGAR DE NUEVO" reinicia el HUD a sus valores iniciales.
+- [X] En `/auth`, iniciar sesión (o entrar como invitado) redirige a `/` y el `Nav` muestra el nombre de usuario en vez de "Iniciar Sesión"; recargar la página mantiene la sesión iniciada.
+- [X] Cerrar sesión desde el `Nav` vuelve a mostrar el botón "Iniciar Sesión" y borra `av_user` de `localStorage`.
+- [X] En `/salon`, cambiar de tab (juego) actualiza el podio y la tabla; si hay sesión iniciada, aparece la fila "TU MEJOR MARCA EN <JUEGO>".
+- [X] El enlace activo en el `Nav` refleja la sección actual (Biblioteca se marca activo también en `/juegos/*`).
+- [X] En una ventana de ~400px de ancho, el `Nav` muestra el menú hamburguesa y ninguna pantalla produce scroll horizontal.
+- [X] Navegar a `/juegos/id-inexistente` muestra la página 404 de Next.js en vez de un error de JavaScript.
 
 ---
 
