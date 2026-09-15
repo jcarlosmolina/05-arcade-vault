@@ -1,6 +1,6 @@
 # SPEC 03 — Página About y envío de correo de contacto
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-09-15
 > **Objective:** Agregar la pantalla About (`references/templates/home-about/about.jsx`) como nueva ruta `/about`, enlazada desde el `Nav`, con un formulario de contacto funcional que envía un correo real mediante Resend a través de un Route Handler propio.
@@ -68,19 +68,19 @@ No se introduce ningún modelo de datos persistente. El único "dato" nuevo es e
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` arranca sin errores de compilación ni de consola en `/about` y el resto de rutas existentes.
-- [ ] `/about` muestra la sección "Acerca de" completa (kicker, título, misión, 3 highlights con icono) y la sección "Contacto" (intro, tips, formulario).
-- [ ] Al hacer scroll en `/about`, las secciones marcadas como `.reveal` aparecen con la transición (clase `.in` se agrega al entrar en viewport).
-- [ ] Enviar el formulario con algún campo vacío dispara la animación `.shake` y no llama al backend.
-- [ ] Enviar el formulario con un email de formato inválido (ej. `hola@`) dispara la animación `.shake` y no llama al backend.
-- [ ] Enviar el formulario con datos válidos deshabilita el botón y muestra "ENVIANDO…" mientras espera la respuesta.
-- [ ] Con `RESEND_API_KEY` y `CONTACT_TO_EMAIL` válidas configuradas en `.env.local`, enviar el formulario hace que llegue un correo real a `CONTACT_TO_EMAIL` con nombre, email y mensaje del formulario, y con `replyTo` apuntando al email ingresado.
-- [ ] Tras un envío exitoso, se muestra la pantalla `.terminal-success` con el nombre del usuario en mayúsculas, igual que en el template.
-- [ ] Si el envío falla (ej. `RESEND_API_KEY` inválida o ausente), se muestra un mensaje de error inline en el formulario, sin borrar los datos ingresados, permitiendo reintentar.
-- [ ] `.env.example` existe en el repo con las claves `RESEND_API_KEY` y `CONTACT_TO_EMAIL` sin valores reales; ningún archivo `.env.local` con valores reales queda commiteado.
-- [ ] El `Nav` muestra "Acerca de" como último link, después de "Salón de la Fama", tanto en desktop como en el panel móvil.
-- [ ] El link "Acerca de" del `Nav` aparece resaltado (activo) únicamente en `/about`.
-- [ ] En una ventana de ~400px de ancho, `/about` no produce scroll horizontal y el menú hamburguesa del `Nav` sigue funcionando.
+- [X] `npm run dev` arranca sin errores de compilación ni de consola en `/about` y el resto de rutas existentes.
+- [X] `/about` muestra la sección "Acerca de" completa (kicker, título, misión, 3 highlights con icono) y la sección "Contacto" (intro, tips, formulario).
+- [X] Al hacer scroll en `/about`, las secciones marcadas como `.reveal` aparecen con la transición (clase `.in` se agrega al entrar en viewport).
+- [X] Enviar el formulario con algún campo vacío dispara la animación `.shake` y no llama al backend.
+- [X] Enviar el formulario con un email de formato inválido (ej. `hola@`) dispara la animación `.shake` y no llama al backend.
+- [X] Enviar el formulario con datos válidos deshabilita el botón y muestra "ENVIANDO…" mientras espera la respuesta.
+- [X] Con `RESEND_API_KEY` y `CONTACT_TO_EMAIL` válidas configuradas en `.env.local`, enviar el formulario hace que llegue un correo real a `CONTACT_TO_EMAIL` con nombre, email y mensaje del formulario, y con `replyTo` apuntando al email ingresado.
+- [X] Tras un envío exitoso, se muestra la pantalla `.terminal-success` con el nombre del usuario en mayúsculas, igual que en el template.
+- [X] Si el envío falla (ej. `RESEND_API_KEY` inválida o ausente), se muestra un mensaje de error inline en el formulario, sin borrar los datos ingresados, permitiendo reintentar.
+- [X] `.env.example` existe en el repo con las claves `RESEND_API_KEY` y `CONTACT_TO_EMAIL` sin valores reales; ningún archivo `.env.local` con valores reales queda commiteado.
+- [X] El `Nav` muestra "Acerca de" como último link, después de "Salón de la Fama", tanto en desktop como en el panel móvil.
+- [X] El link "Acerca de" del `Nav` aparece resaltado (activo) únicamente en `/about`.
+- [X] En una ventana de ~400px de ancho, `/about` no produce scroll horizontal y el menú hamburguesa del `Nav` sigue funcionando.
 
 ---
 
