@@ -1,6 +1,6 @@
 # SPEC 02 — Página Home y su navegación
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-09-15
 > **Objective:** Agregar la pantalla Home (portada) de `references/templates/home-about/home.jsx` como nueva ruta `/`, moviendo la Biblioteca actual a `/biblioteca` y actualizando el `Nav` y los enlaces internos que dependían de la ruta raíz, sin tocar la pantalla About.
@@ -50,19 +50,19 @@ No se introduce ningún modelo de datos nuevo. Se reutiliza `GAMES` de `app/data
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` arranca sin errores de compilación ni de consola en `/`, `/biblioteca` y el resto de rutas existentes.
-- [ ] `/` muestra la pantalla Home completa: hero con CTAs, sección "¿Por qué Arcade Vault?", rail de 6 juegos destacados, sección de estadísticas, "Actividad en vivo" (últimas puntuaciones y top jugadores), precios/FAQ y CTA final.
-- [ ] `/biblioteca` muestra exactamente el contenido y comportamiento que antes mostraba `/` (buscador, chips de categoría, grid de juegos, mensaje "NO HAY RESULTADOS").
-- [ ] En el hero de Home, el botón "EXPLORAR JUEGOS" navega a `/biblioteca` y "CREAR CUENTA" navega a `/auth`.
-- [ ] En el rail de juegos destacados, hacer clic en una mini-tarjeta navega a `/juegos/<id>` del juego correspondiente; "VER TODOS LOS JUEGOS" navega a `/biblioteca`.
-- [ ] El botón "VER SALÓN" de la sección de actividad navega a `/salon`; el CTA de precios y el CTA final navegan a `/auth` y `/biblioteca` respectivamente (igual que en el template).
-- [ ] Al hacer scroll en `/`, las secciones marcadas como `.reveal` aparecen con la transición (clase `.in` se agrega al entrar en viewport).
-- [ ] El `Nav` muestra "Inicio" como primer link, seguido de "Biblioteca" y "Salón de la Fama"; no aparece ningún link "Acerca de".
-- [ ] El logo del `Nav` navega a `/` desde cualquier pantalla.
-- [ ] El link activo del `Nav` es "Inicio" en `/`, "Biblioteca" en `/biblioteca` y en `/juegos/*`, y "Salón de la Fama" en `/salon`.
-- [ ] "VOLVER AL VAULT" en Detalle y en el Reproductor, y el link "volver" en Salón, navegan a `/biblioteca`.
-- [ ] Iniciar sesión (o entrar como invitado) en `/auth` sigue redirigiendo a `/`, que ahora muestra Home en vez de Biblioteca.
-- [ ] En una ventana de ~400px de ancho, `/` no produce scroll horizontal y el menú hamburguesa del `Nav` sigue funcionando.
+- [X] `npm run dev` arranca sin errores de compilación ni de consola en `/`, `/biblioteca` y el resto de rutas existentes.
+- [X] `/` muestra la pantalla Home completa: hero con CTAs, sección "¿Por qué Arcade Vault?", rail de 6 juegos destacados, sección de estadísticas, "Actividad en vivo" (últimas puntuaciones y top jugadores), precios/FAQ y CTA final.
+- [X] `/biblioteca` muestra exactamente el contenido y comportamiento que antes mostraba `/` (buscador, chips de categoría, grid de juegos, mensaje "NO HAY RESULTADOS").
+- [X] En el hero de Home, el botón "EXPLORAR JUEGOS" navega a `/biblioteca` y "CREAR CUENTA" navega a `/auth`.
+- [X] En el rail de juegos destacados, hacer clic en una mini-tarjeta navega a `/juegos/<id>` del juego correspondiente; "VER TODOS LOS JUEGOS" navega a `/biblioteca`.
+- [X] El botón "VER SALÓN" de la sección de actividad navega a `/salon`; el CTA de precios y el CTA final navegan a `/auth` y `/biblioteca` respectivamente (igual que en el template).
+- [X] Al hacer scroll en `/`, las secciones marcadas como `.reveal` aparecen con la transición (clase `.in` se agrega al entrar en viewport).
+- [X] El `Nav` muestra "Inicio" como primer link, seguido de "Biblioteca" y "Salón de la Fama"; no aparece ningún link "Acerca de".
+- [X] El logo del `Nav` navega a `/` desde cualquier pantalla.
+- [X] El link activo del `Nav` es "Inicio" en `/`, "Biblioteca" en `/biblioteca` y en `/juegos/*`, y "Salón de la Fama" en `/salon`.
+- [X] "VOLVER AL VAULT" en Detalle y en el Reproductor, y el link "volver" en Salón, navegan a `/biblioteca`.
+- [X] Iniciar sesión (o entrar como invitado) en `/auth` sigue redirigiendo a `/`, que ahora muestra Home en vez de Biblioteca.
+- [X] En una ventana de ~400px de ancho, `/` no produce scroll horizontal y el menú hamburguesa del `Nav` sigue funcionando.
 
 ---
 
