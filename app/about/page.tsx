@@ -183,7 +183,7 @@ export default function About() {
             </div>
           </div>
 
-          <form className={"contact-form" + (shake ? " shake" : "")} onSubmit={onSubmit}>
+          <form className={"contact-form" + (shake ? " shake" : "")} onSubmit={onSubmit} noValidate>
             {status === "sent" ? (
               <div className="terminal-success">
                 <div className="term-bar">
