@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Press_Start_2P, Courier_Prime, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { SessionProvider } from "@/components/SessionProvider";
+import Nav from "@/components/Nav";
 
 const pressStart2P = Press_Start_2P({
   variable: "--font-pixel",
@@ -34,7 +36,27 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <div className="av-bg" />
         <div className="av-noise" />
-        <div id="root">{children}</div>
+        <div id="root">
+          <SessionProvider>
+            <main className="av-main">
+              <Nav />
+              {children}
+            </main>
+            <footer
+              style={{
+                borderTop: "1px solid var(--line)",
+                padding: "20px 32px",
+                textAlign: "center",
+                color: "var(--ink-faint)",
+                fontFamily: "var(--mono)",
+                fontSize: 11,
+                letterSpacing: "0.16em",
+              }}
+            >
+              © 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0
+            </footer>
+          </SessionProvider>
+        </div>
       </body>
     </html>
   );
