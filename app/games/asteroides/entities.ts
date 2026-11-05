@@ -9,7 +9,15 @@ import {
   H,
   POWERUP_TTL,
   RADII,
+  SHIP_DRAG,
+  SHIP_INVINCIBLE,
+  SHIP_NOSE,
+  SHIP_RADIUS,
+  SHIP_ROT,
+  SHIP_THRUST,
+  SHOOT_COOLDOWN,
   SPEEDS,
+  TRIPLE_SPREAD,
   W,
 } from './constants';
 
@@ -224,6 +232,120 @@ export class Particle {
     ctx.moveTo(this.x, this.y);
     ctx.lineTo(this.x - this.vx * 0.05, this.y - this.vy * 0.05);
     ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// ── Ship ──────────────────────────────────────────────────────────────────────
+/** Estado de las teclas de control que lee la nave en cada frame. */
+export interface ShipInput {
+  left: boolean;
+  right: boolean;
+  thrust: boolean;
+}
+
+export class Ship {
+  x = W / 2;
+  y = H / 2;
+  angle = -Math.PI / 2;
+  vx = 0;
+  vy = 0;
+  radius = SHIP_RADIUS;
+  thrusting = false;
+  invincible = SHIP_INVINCIBLE;
+  shootCooldown = 0;
+  /** Tiempo restante de disparo triple (s); se conserva al reaparecer. */
+  tripleShot = 0;
+  dead = false;
+
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = W / 2;
+    this.y = H / 2;
+    this.angle = -Math.PI / 2;
+    this.vx = 0;
+    this.vy = 0;
+    this.radius = SHIP_RADIUS;
+    this.thrusting = false;
+    this.invincible = SHIP_INVINCIBLE;
+    this.shootCooldown = 0;
+    this.dead = false;
+  }
+
+  update(dt: number, input: ShipInput) {
+    if (this.dead) return;
+    if (this.invincible > 0) this.invincible -= dt;
+    if (this.shootCooldown > 0) this.shootCooldown -= dt;
+    if (this.tripleShot > 0) this.tripleShot -= dt;
+
+    if (input.left) this.angle -= SHIP_ROT * dt;
+    if (input.right) this.angle += SHIP_ROT * dt;
+
+    this.thrusting = input.thrust;
+    if (this.thrusting) {
+      this.vx += Math.cos(this.angle) * SHIP_THRUST * dt;
+      this.vy += Math.sin(this.angle) * SHIP_THRUST * dt;
+    }
+
+    this.vx *= SHIP_DRAG;
+    this.vy *= SHIP_DRAG;
+    this.x = wrap(this.x + this.vx * dt, W);
+    this.y = wrap(this.y + this.vy * dt, H);
+  }
+
+  tryShoot(): Bullet[] {
+    if (this.shootCooldown > 0 || this.dead) return [];
+    this.shootCooldown = SHOOT_COOLDOWN;
+    const ox = this.x + Math.cos(this.angle) * SHIP_NOSE;
+    const oy = this.y + Math.sin(this.angle) * SHIP_NOSE;
+    if (this.tripleShot > 0) {
+      return [
+        new Bullet(ox, oy, this.angle - TRIPLE_SPREAD),
+        new Bullet(ox, oy, this.angle),
+        new Bullet(ox, oy, this.angle + TRIPLE_SPREAD),
+      ];
+    }
+    return [new Bullet(ox, oy, this.angle)];
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    if (this.dead) return;
+    // Parpadeo durante invencibilidad de reaparición
+    if (this.invincible > 0 && Math.floor(this.invincible * 8) % 2 === 0) return;
+
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+    ctx.lineWidth = 1.5;
+    ctx.lineJoin = 'round';
+    ctx.shadowBlur = GLOW;
+
+    // Silueta clásica: triángulo con muesca trasera
+    ctx.strokeStyle = COLORS.ship;
+    ctx.shadowColor = COLORS.ship;
+    ctx.beginPath();
+    ctx.moveTo(20, 0); // nariz
+    ctx.lineTo(-12, -9); // ala izquierda
+    ctx.lineTo(-7, 0); // muesca trasera
+    ctx.lineTo(-12, 9); // ala derecha
+    ctx.closePath();
+    ctx.stroke();
+
+    // Llama del propulsor
+    if (this.thrusting && Math.random() > 0.35) {
+      ctx.strokeStyle = COLORS.flame;
+      ctx.shadowColor = COLORS.flame;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.moveTo(-8, -4);
+      ctx.lineTo(-8 - rand(6, 14), 0);
+      ctx.lineTo(-8, 4);
+      ctx.stroke();
+    }
+
     ctx.restore();
   }
 }
