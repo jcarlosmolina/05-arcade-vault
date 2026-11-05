@@ -1,6 +1,6 @@
 # SPEC 04 — Infraestructura de Supabase en Next.js
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-04
 > **Objective:** Integrar Supabase en la app de Next.js dejando listos los clientes tipados (browser y server), las variables de entorno y el proxy de refresco de sesión, verificados con una llamada real a Supabase Auth desde Server Component y desde componente cliente, sin crear tablas ni cambiar ninguna funcionalidad existente.
@@ -54,16 +54,16 @@ No se introduce ningún modelo de datos nuevo: el proyecto Supabase se mantiene 
 
 ## Acceptance criteria
 
-- [ ] `package.json` incluye `@supabase/supabase-js` y `@supabase/ssr`.
-- [ ] `.env.example` contiene las claves `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` sin valores; `.env.local` con valores reales no está trackeado por git.
-- [ ] Existen `app/lib/supabase/client.ts`, `server.ts`, `proxy.ts` y `database.types.ts`, y los clientes están tipados con `Database`.
-- [ ] Existe `proxy.ts` en la raíz con `matcher` que excluye estáticos y no redirige ni bloquea ninguna ruta.
-- [ ] Durante la verificación, `/debug/supabase` mostró "OK" tanto en la llamada desde Server Component como desde componente cliente.
-- [ ] `npm run dev` arranca sin errores de compilación ni de consola en `/`, `/biblioteca`, `/about`, `/salon` y `/auth`, y su comportamiento es idéntico al previo.
+- [X] `package.json` incluye `@supabase/supabase-js` y `@supabase/ssr`.
+- [X] `.env.example` contiene las claves `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` sin valores; `.env.local` con valores reales no está trackeado por git.
+- [X] Existen `app/lib/supabase/client.ts`, `server.ts`, `proxy.ts` y `database.types.ts`, y los clientes están tipados con `Database`.
+- [X] Existe `proxy.ts` en la raíz con `matcher` que excluye estáticos y no redirige ni bloquea ninguna ruta.
+- [X] Durante la verificación, `/debug/supabase` mostró "OK" tanto en la llamada desde Server Component como desde componente cliente.
+- [X] `npm run dev` arranca sin errores de compilación ni de consola en `/`, `/biblioteca`, `/about`, `/salon` y `/auth`, y su comportamiento es idéntico al previo.
 - [ ] `npm run build` y `npm run lint` pasan sin errores.
-- [ ] `app/debug/` no existe al cerrar el spec y `/debug/supabase` responde 404.
-- [ ] No existen en el repo tablas creadas, carpeta `supabase/` ni código que use `service_role` o `SUPABASE_DB_PASSWORD`.
-- [ ] `/auth` sigue funcionando con la sesión simulada de `localStorage` (login e invitado redirigen a `/`).
+- [X] `app/debug/` no existe al cerrar el spec y `/debug/supabase` responde 404.
+- [X] No existen en el repo tablas creadas, carpeta `supabase/` ni código que use `service_role` o `SUPABASE_DB_PASSWORD`.
+- [X] `/auth` sigue funcionando con la sesión simulada de `localStorage` (login e invitado redirigen a `/`).
 
 ---
 
