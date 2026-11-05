@@ -59,13 +59,51 @@ export default function GamePlayer({ game }: { game: Game }) {
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
   }, [isReal, score]);
 
-  const endGame = () => setOver(true);
+  // ── Pausa: el estado React manda y el motor lo sigue ──
+  useEffect(() => {
+    const engine = engineRef.current;
+    if (!engine) return;
+    if (paused) engine.pause();
+    else engine.resume();
+  }, [paused]);
+
+  // Teclas P / Escape alternan la pausa (solo juegos reales, sin modal abierto).
+  useEffect(() => {
+    if (!isReal || over) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'KeyP' && e.code !== 'Escape') return;
+      const t = e.target;
+      if (
+        t instanceof HTMLElement &&
+        (t.tagName === 'INPUT' ||
+          t.tagName === 'TEXTAREA' ||
+          t.isContentEditable)
+      )
+        return;
+      e.preventDefault();
+      setPaused((p) => !p);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isReal, over]);
+
+  const endGame = () => {
+    if (engineRef.current) {
+      // El motor llama a onGameOver con la puntuación actual → abre el modal.
+      setPaused(false);
+      engineRef.current.end();
+    } else {
+      setOver(true);
+    }
+  };
   const restart = () => {
     setScore(0);
+    setLives(3);
     setLevel(1);
     setPaused(false);
     setOver(false);
     setSaved(false);
+    engineRef.current?.restart();
   };
 
   return (
