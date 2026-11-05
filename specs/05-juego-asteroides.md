@@ -1,6 +1,6 @@
 # SPEC 05 — Juego real de asteroides en el Reproductor
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-05
 > **Objective:** Portar a TypeScript el juego de asteroides de `references/started-games/02-asteroids/` y ejecutarlo como un juego real dentro del Reproductor (`/juegos/asteroides/jugar`), conectado al HUD y al modal de fin de partida existentes, como nueva entrada `asteroides` del catálogo.
