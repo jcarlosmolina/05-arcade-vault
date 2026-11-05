@@ -1,6 +1,6 @@
 # SPEC 05 — Juego real de asteroides en el Reproductor
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-05
 > **Objective:** Portar a TypeScript el juego de asteroides de `references/started-games/02-asteroids/` y ejecutarlo como un juego real dentro del Reproductor (`/juegos/asteroides/jugar`), conectado al HUD y al modal de fin de partida existentes, como nueva entrada `asteroides` del catálogo.
@@ -134,27 +134,27 @@ Convenciones heredadas del original: origen arriba-izquierda, velocidades en pí
 
 ## Acceptance criteria
 
-- [ ] `npm run build` y `npm run lint` pasan sin errores.
-- [ ] `/biblioteca` muestra la tarjeta ASTEROIDES con la portada `.cover-asteroides`, y la tarjeta ROCAS sigue mostrando `.cover-rocas`.
-- [ ] Filtrar por "SHOOTER" en `/biblioteca` muestra Invasores, Rocas y Asteroides.
-- [ ] `/juegos/asteroides` muestra el Detalle con los textos del nuevo juego; "JUGAR AHORA" navega a `/juegos/asteroides/jugar`.
-- [ ] En `/juegos/asteroides/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, ocupando todo su ancho, sin la animación CSS `.game-arena`.
-- [ ] `←`/`→` rotan la nave, `↑` propulsa y `Espacio` dispara; ninguna de esas teclas desplaza la página.
-- [ ] Destruir un asteroide grande, mediano y pequeño suma 20, 50 y 100 puntos respectivamente en el HUD React.
-- [ ] Un asteroide grande se parte en medianos y un mediano en pequeños; los pequeños desaparecen.
-- [ ] Colisionar con un asteroide resta una vida en el HUD React y la nave reaparece parpadeando.
-- [ ] Al destruir todos los asteroides, el nivel del HUD React sube en 1 y aparece una nueva oleada.
-- [ ] Recoger un power-up "3x" activa disparo triple y muestra su temporizador dentro del canvas.
-- [ ] La nave es cyan, los asteroides magenta, las balas amarillas y el power-up verde, con brillo neón.
-- [ ] El canvas no dibuja SCORE, NIVEL ni iconos de vidas.
-- [ ] PAUSA congela la partida y muestra "EN PAUSA"; REANUDAR la continúa. `P` y `Escape` hacen lo mismo.
-- [ ] Perder la tercera vida abre el modal "FIN DEL JUEGO" con la puntuación real; no aparece el texto "ESPACIO PARA REINICIAR".
-- [ ] FIN abre el modal con la puntuación actual de la partida.
-- [ ] En el modal se puede escribir un nombre con espacios; GUARDAR PUNTUACIÓN añade una entrada `{ game: "asteroides", score, name, at }` a `av_scores` en `localStorage`.
-- [ ] JUGAR DE NUEVO reinicia a puntuación 0, 3 vidas y nivel 1.
-- [ ] Tras pulsar SALIR, presionar `Espacio` o las flechas en otra página no lanza errores de consola ni la desplaza de forma anómala (listeners eliminados).
-- [ ] `/juegos/rocas/jugar` sigue mostrando la simulación CSS con puntuación automática, igual que antes.
-- [ ] No hay errores en la consola del navegador durante una partida completa de asteroides.
+- [X] `npm run build` y `npm run lint` pasan sin errores.
+- [X] `/biblioteca` muestra la tarjeta ASTEROIDES con la portada `.cover-asteroides`, y la tarjeta ROCAS sigue mostrando `.cover-rocas`.
+- [X] Filtrar por "SHOOTER" en `/biblioteca` muestra Invasores, Rocas y Asteroides.
+- [X] `/juegos/asteroides` muestra el Detalle con los textos del nuevo juego; "JUGAR AHORA" navega a `/juegos/asteroides/jugar`.
+- [X] En `/juegos/asteroides/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, ocupando todo su ancho, sin la animación CSS `.game-arena`.
+- [X] `←`/`→` rotan la nave, `↑` propulsa y `Espacio` dispara; ninguna de esas teclas desplaza la página.
+- [X] Destruir un asteroide grande, mediano y pequeño suma 20, 50 y 100 puntos respectivamente en el HUD React.
+- [X] Un asteroide grande se parte en medianos y un mediano en pequeños; los pequeños desaparecen.
+- [X] Colisionar con un asteroide resta una vida en el HUD React y la nave reaparece parpadeando.
+- [X] Al destruir todos los asteroides, el nivel del HUD React sube en 1 y aparece una nueva oleada.
+- [X] Recoger un power-up "3x" activa disparo triple y muestra su temporizador dentro del canvas.
+- [X] La nave es cyan, los asteroides magenta, las balas amarillas y el power-up verde, con brillo neón.
+- [X] El canvas no dibuja SCORE, NIVEL ni iconos de vidas.
+- [X] PAUSA congela la partida y muestra "EN PAUSA"; REANUDAR la continúa. `P` y `Escape` hacen lo mismo.
+- [X] Perder la tercera vida abre el modal "FIN DEL JUEGO" con la puntuación real; no aparece el texto "ESPACIO PARA REINICIAR".
+- [X] FIN abre el modal con la puntuación actual de la partida.
+- [X] En el modal se puede escribir un nombre con espacios; GUARDAR PUNTUACIÓN añade una entrada `{ game: "asteroides", score, name, at }` a `av_scores` en `localStorage`.
+- [X] JUGAR DE NUEVO reinicia a puntuación 0, 3 vidas y nivel 1.
+- [X] Tras pulsar SALIR, presionar `Espacio` o las flechas en otra página no lanza errores de consola ni la desplaza de forma anómala (listeners eliminados).
+- [X] `/juegos/rocas/jugar` sigue mostrando la simulación CSS con puntuación automática, igual que antes.
+- [X] No hay errores en la consola del navegador durante una partida completa de asteroides.
 
 ---
 
