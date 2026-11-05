@@ -45,19 +45,19 @@ export default function GamePlayer({ game }: { game: Game }) {
   }, [engineFactory]);
 
   // ── Simulación (juegos sin motor) ──
+  // La puntuación simulada vive también en un ref para decidir la subida de
+  // nivel en el mismo tick del intervalo (sin setState dentro de un efecto).
+  const simScoreRef = useRef(0);
   useEffect(() => {
     if (isReal || over || paused) return;
-    const t = setInterval(
-      () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
-      220,
-    );
+    const t = setInterval(() => {
+      const next = simScoreRef.current + Math.floor(10 + Math.random() * 90);
+      simScoreRef.current = next;
+      setScore(next);
+      if (next % 2500 < 100) setLevel((l) => l + 1);
+    }, 220);
     return () => clearInterval(t);
   }, [isReal, over, paused]);
-
-  useEffect(() => {
-    if (isReal) return;
-    if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [isReal, score]);
 
   // ── Pausa: el estado React manda y el motor lo sigue ──
   useEffect(() => {
@@ -97,6 +97,7 @@ export default function GamePlayer({ game }: { game: Game }) {
     }
   };
   const restart = () => {
+    simScoreRef.current = 0;
     setScore(0);
     setLives(3);
     setLevel(1);
