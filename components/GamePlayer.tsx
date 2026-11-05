@@ -1,29 +1,63 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useSession } from "@/components/SessionProvider";
-import type { Game } from "@/app/data/games";
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { useSession } from '@/components/SessionProvider';
+import type { Game } from '@/app/data/games';
+import { GAME_ENGINES } from '@/app/games/registry';
+import type { GameInstance } from '@/app/games/types';
 
 export default function GamePlayer({ game }: { game: Game }) {
   const { user, saveScore } = useSession();
   const [score, setScore] = useState(0);
-  const [lives] = useState(3);
+  const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [name, setName] = useState(user ? user.name : "INVITADO");
+  const [name, setName] = useState(user ? user.name : 'INVITADO');
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    if (over || paused) return;
-    const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
-    return () => clearInterval(t);
-  }, [over, paused]);
+  // Juego real si el id tiene motor registrado; si no, simulación.
+  const engineFactory = GAME_ENGINES[game.id];
+  const isReal = engineFactory !== undefined;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const engineRef = useRef<GameInstance | null>(null);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!engineFactory || !canvas) return;
+    const instance = engineFactory(canvas, {
+      onStats: (stats) => {
+        setScore(stats.score);
+        setLives(stats.lives);
+        setLevel(stats.level);
+      },
+      onGameOver: (finalScore) => {
+        setScore(finalScore);
+        setOver(true);
+      },
+    });
+    engineRef.current = instance;
+    return () => {
+      instance.destroy();
+      engineRef.current = null;
+    };
+  }, [engineFactory]);
+
+  // ── Simulación (juegos sin motor) ──
+  useEffect(() => {
+    if (isReal || over || paused) return;
+    const t = setInterval(
+      () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
+      220,
+    );
+    return () => clearInterval(t);
+  }, [isReal, over, paused]);
+
+  useEffect(() => {
+    if (isReal) return;
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [score]);
+  }, [isReal, score]);
 
   const endGame = () => setOver(true);
   const restart = () => {
@@ -37,29 +71,29 @@ export default function GamePlayer({ game }: { game: Game }) {
   return (
     <div className="av-player fade-in">
       <div className="player-hud">
-        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           <div className="hud-stat">
             <div className="l">Jugador</div>
-            <div className="v" style={{ color: "var(--ink)" }}>
+            <div className="v" style={{ color: 'var(--ink)' }}>
               {name}
             </div>
           </div>
           <div className="hud-stat">
             <div className="l">Puntuación</div>
-            <div className="v">{score.toLocaleString("es-ES")}</div>
+            <div className="v">{score.toLocaleString('es-ES')}</div>
           </div>
           <div className="hud-stat lives">
             <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
+            <div className="v">{'♥ '.repeat(lives).trim() || '—'}</div>
           </div>
           <div className="hud-stat level">
             <div className="l">Nivel</div>
-            <div className="v">{String(level).padStart(2, "0")}</div>
+            <div className="v">{String(level).padStart(2, '0')}</div>
           </div>
         </div>
         <div className="hud-actions">
           <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
-            {paused ? "REANUDAR" : "PAUSA"}
+            {paused ? 'REANUDAR' : 'PAUSA'}
           </button>
           <button className="btn magenta" onClick={endGame}>
             FIN
@@ -72,20 +106,46 @@ export default function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor"></div>
-            <div className="enemy e1"></div>
-            <div className="enemy e2"></div>
-            <div className="enemy e3"></div>
-            <div className="player-ship"></div>
-          </div>
+          {isReal ? (
+            <canvas
+              ref={canvasRef}
+              width={800}
+              height={600}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                display: 'block',
+              }}
+            />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor"></div>
+              <div className="enemy e1"></div>
+              <div className="enemy e2"></div>
+              <div className="enemy e3"></div>
+              <div className="player-ship"></div>
+            </div>
+          )}
           {paused && (
-            <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
+            <div
+              className="crt-content"
+              style={{ background: 'rgba(0,0,0,0.6)', zIndex: 5 }}
+            >
               <div>
                 <div className="pixel neon-yellow" style={{ fontSize: 22 }}>
                   EN PAUSA
                 </div>
-                <div className="mono" style={{ fontSize: 11, color: "var(--ink-dim)", marginTop: 10, letterSpacing: "0.16em" }}>
+                <div
+                  className="mono"
+                  style={{
+                    fontSize: 11,
+                    color: 'var(--ink-dim)',
+                    marginTop: 10,
+                    letterSpacing: '0.16em',
+                  }}
+                >
                   PULSA REANUDAR PARA CONTINUAR
                 </div>
               </div>
@@ -94,9 +154,7 @@ export default function GamePlayer({ game }: { game: Game }) {
         </div>
         <div className="crt-bottom">
           <span className="led">SEÑAL OK</span>
-          <span>
-            {game.title} · CRT-83 · 60 HZ
-          </span>
+          <span>{game.title} · CRT-83 · 60 HZ</span>
           <span>CARGA · 1MB</span>
         </div>
       </div>
@@ -106,12 +164,14 @@ export default function GamePlayer({ game }: { game: Game }) {
           <div className="modal">
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
-            <div className="final">{score.toLocaleString("es-ES")}</div>
+            <div className="final">{score.toLocaleString('es-ES')}</div>
             {!saved ? (
               <div className="input-row">
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
+                  onChange={(e) =>
+                    setName(e.target.value.toUpperCase().slice(0, 10))
+                  }
                   placeholder="TUS INICIALES"
                 />
                 <button
