@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 
 export interface SessionUser {
   name: string;
@@ -22,26 +22,51 @@ interface SessionContextValue {
 
 const SessionContext = createContext<SessionContextValue | null>(null);
 
+// La sesión vive en localStorage ("av_user"); React la lee como store externo.
+// En el servidor (y durante la hidratación) no hay sesión.
+const USER_KEY = "av_user";
+const sessionListeners = new Set<() => void>();
+
+function subscribeSession(cb: () => void) {
+  sessionListeners.add(cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    sessionListeners.delete(cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
+function readSessionRaw(): string | null {
+  try {
+    return localStorage.getItem(USER_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionRaw(raw: string | null) {
+  try {
+    if (raw === null) localStorage.removeItem(USER_KEY);
+    else localStorage.setItem(USER_KEY, raw);
+  } catch {
+    // localStorage no disponible; se ignora en este MVP mock.
+  }
+  sessionListeners.forEach((cb) => cb());
+}
+
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<SessionUser | null>(null);
-
-  useEffect(() => {
+  const raw = useSyncExternalStore(subscribeSession, readSessionRaw, () => null);
+  const user = useMemo<SessionUser | null>(() => {
     try {
-      setUser(JSON.parse(localStorage.getItem("av_user") || "null"));
+      return JSON.parse(raw || "null");
     } catch {
-      setUser(null);
+      return null;
     }
-  }, []);
+  }, [raw]);
 
-  const login = (u: SessionUser) => {
-    setUser(u);
-    localStorage.setItem("av_user", JSON.stringify(u));
-  };
+  const login = (u: SessionUser) => writeSessionRaw(JSON.stringify(u));
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("av_user");
-  };
+  const logout = () => writeSessionRaw(null);
 
   const saveScore = (entry: Omit<ScoreEntry, "at">) => {
     try {
