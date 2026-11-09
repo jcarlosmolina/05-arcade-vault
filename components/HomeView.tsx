@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { GAMES, type Game } from "@/app/data/games";
+import { type Game } from "@/app/data/games";
 
 function useReveal() {
   useEffect(() => {
@@ -193,7 +193,7 @@ const TOP_PLAYERS = [
   { r: 5, p: "GLITCHA", s: 138900 },
 ];
 
-export default function Home() {
+export default function HomeView({ games }: { games: Game[] }) {
   useReveal();
   const router = useRouter();
 
@@ -262,7 +262,7 @@ export default function Home() {
           <div className="section-rule"></div>
         </div>
         <div className="mini-rail">
-          {GAMES.slice(0, 6).map((g) => (
+          {games.slice(0, 6).map((g) => (
             <MiniCard key={g.id} game={g} onClick={() => router.push(`/juegos/${g.id}`)} />
           ))}
         </div>
