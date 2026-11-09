@@ -1,19 +1,22 @@
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { GAMES, seededScores } from "@/app/data/games";
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { formatPlays } from '@/app/data/games';
+import { getGame, getTopScores } from '@/app/lib/games';
 
-export default async function GameDetailPage({ params }: PageProps<"/juegos/[id]">) {
+export default async function GameDetailPage({
+  params,
+}: PageProps<'/juegos/[id]'>) {
   const { id } = await params;
-  const game = GAMES.find((g) => g.id === id);
+  const game = await getGame(id);
   if (!game) notFound();
 
-  const scores = seededScores(id.length * 17 + 3, 10);
+  const scores = await getTopScores(game.id, 10);
 
   return (
     <div className="av-detail fade-in">
       <div>
         <div className="detail-cover">
-          <div className={"cover-bg " + game.cover}></div>
+          <div className={'cover-bg ' + game.cover}></div>
         </div>
         <div style={{ marginTop: 20 }} className="detail-info">
           <div className="detail-tags">
@@ -27,17 +30,29 @@ export default async function GameDetailPage({ params }: PageProps<"/juegos/[id]
           <div className="stat-strip">
             <div>
               <div className="l">Partidas</div>
-              <div className="v">{game.plays}</div>
+              <div className="v">{formatPlays(game.plays)}</div>
             </div>
             <div>
               <div className="l">Mejor global</div>
-              <div className="v" style={{ color: "var(--magenta)", textShadow: "0 0 6px rgba(255,0,110,0.5)" }}>
-                {game.best.toLocaleString("es-ES")}
+              <div
+                className="v"
+                style={{
+                  color: 'var(--magenta)',
+                  textShadow: '0 0 6px rgba(255,0,110,0.5)',
+                }}
+              >
+                {game.best.toLocaleString('es-ES')}
               </div>
             </div>
             <div>
               <div className="l">Dificultad</div>
-              <div className="v" style={{ color: "var(--yellow)", textShadow: "0 0 6px rgba(245,255,0,0.5)" }}>
+              <div
+                className="v"
+                style={{
+                  color: 'var(--yellow)',
+                  textShadow: '0 0 6px rgba(245,255,0,0.5)',
+                }}
+              >
                 ★ ★ ★ ☆ ☆
               </div>
             </div>
@@ -56,14 +71,44 @@ export default async function GameDetailPage({ params }: PageProps<"/juegos/[id]
       <aside>
         <div className="leaderboard">
           <h3>MEJORES PUNTUACIONES</h3>
+          {scores.length === 0 && (
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '32px 12px',
+                color: 'var(--ink-faint)',
+              }}
+            >
+              <div
+                className="pixel"
+                style={{ fontSize: 12, color: 'var(--magenta)', marginBottom: 8 }}
+              >
+                AÚN NO HAY PUNTUACIONES — SÉ EL PRIMERO
+              </div>
+            </div>
+          )}
           {scores.map((r, i) => (
-            <div key={r.name} className={"lb-row" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")}>
-              <div className="rk">#{String(r.rank).padStart(2, "0")}</div>
+            <div
+              key={r.rank}
+              className={
+                'lb-row' +
+                (i === 0 ? ' top1' : i === 1 ? ' top2' : i === 2 ? ' top3' : '')
+              }
+            >
+              <div className="rk">#{String(r.rank).padStart(2, '0')}</div>
               <div className="pl">
                 {r.name}
-                <div style={{ fontSize: 10, color: "var(--ink-faint)", letterSpacing: "0.1em" }}>{r.date}</div>
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: 'var(--ink-faint)',
+                    letterSpacing: '0.1em',
+                  }}
+                >
+                  {r.date}
+                </div>
               </div>
-              <div className="sc">{r.score.toLocaleString("es-ES")}</div>
+              <div className="sc">{r.score.toLocaleString('es-ES')}</div>
             </div>
           ))}
         </div>

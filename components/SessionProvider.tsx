@@ -6,18 +6,10 @@ export interface SessionUser {
   name: string;
 }
 
-export interface ScoreEntry {
-  game: string;
-  score: number;
-  name: string;
-  at: number;
-}
-
 interface SessionContextValue {
   user: SessionUser | null;
   login: (u: SessionUser) => void;
   logout: () => void;
-  saveScore: (entry: Omit<ScoreEntry, "at">) => void;
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);
@@ -68,18 +60,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const logout = () => writeSessionRaw(null);
 
-  const saveScore = (entry: Omit<ScoreEntry, "at">) => {
-    try {
-      const all = JSON.parse(localStorage.getItem("av_scores") || "[]");
-      all.push({ ...entry, at: Date.now() });
-      localStorage.setItem("av_scores", JSON.stringify(all));
-    } catch {
-      // localStorage no disponible; se ignora en este MVP mock.
-    }
-  };
-
   return (
-    <SessionContext.Provider value={{ user, login, logout, saveScore }}>
+    <SessionContext.Provider value={{ user, login, logout }}>
       {children}
     </SessionContext.Provider>
   );
