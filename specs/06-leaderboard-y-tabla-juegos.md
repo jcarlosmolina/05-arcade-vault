@@ -1,6 +1,6 @@
 # SPEC 06 — Leaderboard y tabla de juegos en Supabase
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01, SPEC 04, SPEC 05
 > **Date:** 2026-11-06
 > **Objective:** Persistir el catálogo de juegos y las puntuaciones en Supabase (tablas `games` y `scores`) para que Biblioteca, Home, Detalle y Salón de la Fama lean datos reales, y que el único juego real (`asteroides`) guarde su puntuación de forma anónima desde el modal de fin de partida. El catálogo arranca con **una sola fila** (`asteroides`) y `scores` arranca **vacía** (sin datos ficticios).
@@ -132,26 +132,26 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Existen en Supabase las tablas `games` y `scores` y la vista `games_with_stats`, con RLS activado en ambas tablas.
-- [ ] `games` contiene exactamente 1 fila: `asteroides`, con los mismos `id` y textos que el catálogo anterior.
-- [ ] `scores` existe y está vacía (0 filas) al terminar la implementación; no hay puntuaciones seed ni ficticias.
-- [ ] `games_with_stats` devuelve para `asteroides` `best = 0` y `plays = 0` mientras `scores` esté vacía.
-- [ ] Con la clave publishable, un `insert` en `scores` válido tiene éxito; un `insert` con `player_name` vacío, de más de 10 caracteres, `score` negativo o mayor que 1.000.000, o `game_id` inexistente es rechazado por la BD.
-- [ ] Con la clave publishable, `update` y `delete` sobre `scores` y cualquier escritura sobre `games` son rechazados.
-- [ ] `/biblioteca` muestra el único juego leído de la BD (`asteroides`); el filtro "SHOOTER" lo muestra y los demás filtros de categoría muestran el estado vacío.
-- [ ] La tarjeta muestra `best` y `plays` calculados desde `scores`; `plays` pasa por `formatPlays`.
-- [ ] `/` muestra en "JUEGOS DISPONIBLES AHORA" los juegos de la BD (hasta 6; hoy solo `asteroides`) sin romper el layout.
-- [ ] `/juegos/asteroides` muestra el Top 10 real ordenado por puntuación descendente (estado vacío si no hay puntuaciones); `/juegos/inexistente` y `/juegos/rocas` responden 404.
-- [ ] `/salon` sin parámetro muestra el primer juego (`asteroides`); `/salon?juego=asteroides` muestra podio (3 primeros) y tabla (12) de ese juego cuando hay datos, y cambiar de tab cambia el parámetro `juego` de la URL.
-- [ ] Un juego sin puntuaciones (el estado inicial de `asteroides`) muestra un estado vacío en `/salon` sin errores.
-- [ ] Tras guardar una puntuación de prueba con un nombre igual al de la sesión simulada, `/salon` muestra "TU MEJOR MARCA" con su mejor puntuación y rango; sin coincidencia o sin sesión, la fila no aparece.
-- [ ] En `/juegos/asteroides/jugar`, GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'asteroides'`, el nombre en mayúsculas y la puntuación final, y aparece en `/salon?juego=asteroides` al recargar.
-- [ ] Si el insert falla (p. ej. sin red), el modal muestra "NO SE PUDO GUARDAR" y permite reintentar.
-- [ ] `GamePlayer` conserva la rama "MODO DEMO — NO SE GUARDA" (sin campo de iniciales ni botón de guardar, sin insert) para juegos fuera de `GAME_ENGINES`; no es alcanzable desde la UI con el catálogo actual.
-- [ ] No queda código que lea o escriba la clave `av_scores` ni referencias a `GAMES`, `seededScores` o `PLAYERS`.
-- [ ] `npm run build` y `npm run lint` pasan sin errores.
-- [ ] MCP `get_advisors` (seguridad) no reporta tablas sin RLS ni vistas `SECURITY DEFINER` para `games`, `scores` o `games_with_stats`.
-- [ ] No hay errores en la consola del navegador al recorrer Home → Biblioteca → Detalle → Reproductor → Salón.
+- [X] Existen en Supabase las tablas `games` y `scores` y la vista `games_with_stats`, con RLS activado en ambas tablas.
+- [X] `games` contiene exactamente 1 fila: `asteroides`, con los mismos `id` y textos que el catálogo anterior.
+- [X] `scores` existe y está vacía (0 filas) al terminar la implementación; no hay puntuaciones seed ni ficticias.
+- [X] `games_with_stats` devuelve para `asteroides` `best = 0` y `plays = 0` mientras `scores` esté vacía.
+- [X] Con la clave publishable, un `insert` en `scores` válido tiene éxito; un `insert` con `player_name` vacío, de más de 10 caracteres, `score` negativo o mayor que 1.000.000, o `game_id` inexistente es rechazado por la BD.
+- [X] Con la clave publishable, `update` y `delete` sobre `scores` y cualquier escritura sobre `games` son rechazados.
+- [X] `/biblioteca` muestra el único juego leído de la BD (`asteroides`); el filtro "SHOOTER" lo muestra y los demás filtros de categoría muestran el estado vacío.
+- [X] La tarjeta muestra `best` y `plays` calculados desde `scores`; `plays` pasa por `formatPlays`.
+- [X] `/` muestra en "JUEGOS DISPONIBLES AHORA" los juegos de la BD (hasta 6; hoy solo `asteroides`) sin romper el layout.
+- [X] `/juegos/asteroides` muestra el Top 10 real ordenado por puntuación descendente (estado vacío si no hay puntuaciones); `/juegos/inexistente` y `/juegos/rocas` responden 404.
+- [X] `/salon` sin parámetro muestra el primer juego (`asteroides`); `/salon?juego=asteroides` muestra podio (3 primeros) y tabla (12) de ese juego cuando hay datos, y cambiar de tab cambia el parámetro `juego` de la URL.
+- [X] Un juego sin puntuaciones (el estado inicial de `asteroides`) muestra un estado vacío en `/salon` sin errores.
+- [X] Tras guardar una puntuación de prueba con un nombre igual al de la sesión simulada, `/salon` muestra "TU MEJOR MARCA" con su mejor puntuación y rango; sin coincidencia o sin sesión, la fila no aparece.
+- [X] En `/juegos/asteroides/jugar`, GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'asteroides'`, el nombre en mayúsculas y la puntuación final, y aparece en `/salon?juego=asteroides` al recargar.
+- [X] Si el insert falla (p. ej. sin red), el modal muestra "NO SE PUDO GUARDAR" y permite reintentar.
+- [X] `GamePlayer` conserva la rama "MODO DEMO — NO SE GUARDA" (sin campo de iniciales ni botón de guardar, sin insert) para juegos fuera de `GAME_ENGINES`; no es alcanzable desde la UI con el catálogo actual.
+- [X] No queda código que lea o escriba la clave `av_scores` ni referencias a `GAMES`, `seededScores` o `PLAYERS`.
+- [X] `npm run build` y `npm run lint` pasan sin errores.
+- [X] MCP `get_advisors` (seguridad) no reporta tablas sin RLS ni vistas `SECURITY DEFINER` para `games`, `scores` o `games_with_stats`.
+- [X] No hay errores en la consola del navegador al recorrer Home → Biblioteca → Detalle → Reproductor → Salón.
 
 ---
 
