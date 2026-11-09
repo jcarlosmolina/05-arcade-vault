@@ -3,19 +3,22 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from '@/components/SessionProvider';
+import { createClient } from '@/app/lib/supabase/client';
 import type { Game } from '@/app/data/games';
 import { GAME_ENGINES } from '@/app/games/registry';
 import type { GameInstance } from '@/app/games/types';
 
 export default function GamePlayer({ game }: { game: Game }) {
-  const { user, saveScore } = useSession();
+  const { user } = useSession();
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user ? user.name : 'INVITADO');
-  const [saved, setSaved] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<
+    'idle' | 'saving' | 'saved' | 'error'
+  >('idle');
 
   // Juego real si el id tiene motor registrado; si no, simulación.
   const engineFactory = GAME_ENGINES[game.id];
@@ -96,6 +99,16 @@ export default function GamePlayer({ game }: { game: Game }) {
       setOver(true);
     }
   };
+  const handleSave = async () => {
+    const playerName = name.trim().toUpperCase().slice(0, 10);
+    if (!playerName || saveStatus === 'saving') return;
+    setSaveStatus('saving');
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('scores')
+      .insert({ game_id: game.id, player_name: playerName, score });
+    setSaveStatus(error ? 'error' : 'saved');
+  };
   const restart = () => {
     simScoreRef.current = 0;
     setScore(0);
@@ -103,7 +116,7 @@ export default function GamePlayer({ game }: { game: Game }) {
     setLevel(1);
     setPaused(false);
     setOver(false);
-    setSaved(false);
+    setSaveStatus('idle');
     engineRef.current?.restart();
   };
 
@@ -204,25 +217,40 @@ export default function GamePlayer({ game }: { game: Game }) {
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{score.toLocaleString('es-ES')}</div>
-            {!saved ? (
-              <div className="input-row">
-                <input
-                  value={name}
-                  onChange={(e) =>
-                    setName(e.target.value.toUpperCase().slice(0, 10))
-                  }
-                  placeholder="TUS INICIALES"
-                />
-                <button
-                  className="btn yellow"
-                  onClick={() => {
-                    saveScore({ game: game.id, score, name });
-                    setSaved(true);
-                  }}
-                >
-                  GUARDAR PUNTUACIÓN
-                </button>
-              </div>
+            {!isReal ? (
+              <div className="toast-saved">▸ MODO DEMO — NO SE GUARDA_</div>
+            ) : saveStatus !== 'saved' ? (
+              <>
+                <div className="input-row">
+                  <input
+                    value={name}
+                    onChange={(e) =>
+                      setName(e.target.value.toUpperCase().slice(0, 10))
+                    }
+                    placeholder="TUS INICIALES"
+                    disabled={saveStatus === 'saving'}
+                  />
+                  <button
+                    className="btn yellow"
+                    onClick={handleSave}
+                    disabled={saveStatus === 'saving' || !name.trim()}
+                  >
+                    {saveStatus === 'saving'
+                      ? 'GUARDANDO…'
+                      : saveStatus === 'error'
+                        ? 'REINTENTAR'
+                        : 'GUARDAR PUNTUACIÓN'}
+                  </button>
+                </div>
+                {saveStatus === 'error' && (
+                  <div
+                    className="pixel"
+                    style={{ fontSize: 10, color: 'var(--magenta)', marginTop: 10 }}
+                  >
+                    NO SE PUDO GUARDAR
+                  </div>
+                )}
+              </>
             ) : (
               <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
             )}
