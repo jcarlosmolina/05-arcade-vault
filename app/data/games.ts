@@ -11,7 +11,7 @@ export interface Game {
   cover: string; // clase CSS ya definida en globals.css (cover-bricks, cover-tetro, ...)
   color: 'cyan' | 'magenta' | 'yellow' | 'green';
   best: number;
-  plays: string;
+  plays: number; // COUNT(*) de scores; se muestra con formatPlays()
 }
 
 export interface ScoreRow {
@@ -31,7 +31,7 @@ export const GAMES: Game[] = [
     cover: 'cover-bricks',
     color: 'cyan',
     best: 28450,
-    plays: '12.4K',
+    plays: 12400,
   },
   {
     id: 'caida',
@@ -42,7 +42,7 @@ export const GAMES: Game[] = [
     cover: 'cover-tetro',
     color: 'magenta',
     best: 184220,
-    plays: '31.8K',
+    plays: 31800,
   },
   {
     id: 'serpentina',
@@ -53,7 +53,7 @@ export const GAMES: Game[] = [
     cover: 'cover-snake',
     color: 'green',
     best: 7820,
-    plays: '9.1K',
+    plays: 9100,
   },
   {
     id: 'gloton',
@@ -64,7 +64,7 @@ export const GAMES: Game[] = [
     cover: 'cover-glot',
     color: 'yellow',
     best: 96400,
-    plays: '27.2K',
+    plays: 27200,
   },
   {
     id: 'invasores',
@@ -75,7 +75,7 @@ export const GAMES: Game[] = [
     cover: 'cover-invaders',
     color: 'green',
     best: 54190,
-    plays: '18.0K',
+    plays: 18000,
   },
   {
     id: 'rocas',
@@ -86,7 +86,7 @@ export const GAMES: Game[] = [
     cover: 'cover-rocas',
     color: 'yellow',
     best: 41200,
-    plays: '15.6K',
+    plays: 15600,
   },
   {
     id: 'asteroides',
@@ -97,7 +97,7 @@ export const GAMES: Game[] = [
     cover: 'cover-asteroides',
     color: 'yellow',
     best: 32760,
-    plays: '8.3K',
+    plays: 8300,
   },
   {
     id: 'ranaria',
@@ -108,7 +108,7 @@ export const GAMES: Game[] = [
     cover: 'cover-rana',
     color: 'green',
     best: 18900,
-    plays: '6.4K',
+    plays: 6400,
   },
   {
     id: 'duelo-pixel',
@@ -119,9 +119,14 @@ export const GAMES: Game[] = [
     cover: 'cover-duelo',
     color: 'cyan',
     best: 24,
-    plays: '4.2K',
+    plays: 4200,
   },
 ];
+
+export function formatPlays(n: number): string {
+  if (n < 1000) return String(n);
+  return `${(n / 1000).toFixed(1)}K`;
+}
 
 export const CATS: string[] = [
   'TODOS',
