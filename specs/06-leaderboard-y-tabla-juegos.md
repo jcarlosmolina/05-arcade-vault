@@ -1,6 +1,6 @@
 # SPEC 06 — Leaderboard y tabla de juegos en Supabase
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** SPEC 01, SPEC 04, SPEC 05
 > **Date:** 2026-11-06
 > **Objective:** Persistir el catálogo de juegos y las puntuaciones en Supabase (tablas `games` y `scores`) para que Biblioteca, Home, Detalle y Salón de la Fama lean datos reales, y que el único juego real (`asteroides`) guarde su puntuación de forma anónima desde el modal de fin de partida. El catálogo arranca con **una sola fila** (`asteroides`) y `scores` arranca **vacía** (sin datos ficticios).
