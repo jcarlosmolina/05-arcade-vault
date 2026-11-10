@@ -1,6 +1,6 @@
 # SPEC 07 — Juego real de bloques en el Reproductor
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06
 > **Date:** 2026-11-10
 > **Objective:** Portar a TypeScript el juego de `references/started-games/03-tetris/` y ejecutarlo como juego real en `/juegos/bloques/jugar`, conectado al HUD y al modal de fin de partida, con su fila en `games` y puntuaciones guardadas en `scores`.
@@ -110,31 +110,31 @@ Estado interno del motor (privado a `engine.ts`): `board` (matriz `ROWS×COLS`),
 
 ## Acceptance criteria
 
-- [ ] `games` contiene la fila `bloques` y `games_with_stats` la devuelve con `best = 0` y `plays = 0` sin puntuaciones.
-- [ ] `/biblioteca` muestra la tarjeta BLOQUES con la portada `.cover-bloques`; el filtro "PUZZLE" la incluye.
-- [ ] `.cover-tetro` ya no existe en `app/globals.css`.
-- [ ] `/juegos/bloques` muestra el Detalle con sus textos; "JUGAR AHORA" navega a `/juegos/bloques/jugar`.
-- [ ] En `/juegos/bloques/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, sin `.game-arena`.
-- [ ] El tablero 10×20 se dibuja centrado (280×560) con LÍNEAS a la izquierda y SIGUIENTE a la derecha, mostrando la pieza que aparece a continuación.
-- [ ] `←`/`→` mueven, `↑` y `X` rotan, `↓` hace soft drop y `Espacio` hard drop; ninguna tecla de juego desplaza la página.
-- [ ] Solo aparecen las 7 piezas estándar, cada una con su color (I cyan, O amarillo, S verde, Z magenta, T violeta, L naranja, J azul) y brillo neón; nunca la pieza "tuerca".
-- [ ] Rotar una pieza I pegada a la pared aplica wall kick en lugar de bloquear la rotación.
-- [ ] Cada fila de soft drop suma 1 punto; un hard drop suma 2 × filas recorridas.
-- [ ] En nivel 1, limpiar 1/2/3/4 líneas suma 100/300/500/800; en nivel 2, limpiar 4 líneas suma 1600.
-- [ ] Al llegar a 10 líneas el nivel del HUD React pasa a 02 y la caída automática se acelera (910 ms por fila).
-- [ ] La pieza fantasma se ve a baja opacidad en la posición de aterrizaje.
-- [ ] La puntuación nunca supera 1.000.000.
-- [ ] El HUD React muestra puntuación y nivel, sin la stat "Vidas"; el canvas no dibuja SCORE/NIVEL ni overlays de pausa/game over.
-- [ ] `/juegos/asteroides/jugar` sigue mostrando sus vidas `♥` en el HUD.
-- [ ] PAUSA congela la partida (la pieza no cae ni responde a teclas) y muestra "EN PAUSA"; REANUDAR la continúa; `P` y `Escape` hacen lo mismo.
-- [ ] Que una pieza nueva colisione al aparecer, y FIN, abren el modal "FIN DEL JUEGO" con la puntuación real.
-- [ ] GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'bloques'`, nombre en mayúsculas y la puntuación final; aparece en `/salon?juego=bloques` al recargar.
-- [ ] `/salon` muestra una tab BLOQUES que cambia el parámetro `juego` de la URL.
-- [ ] JUGAR DE NUEVO reinicia a puntuación 0, 0 líneas, nivel 1 y tablero vacío.
-- [ ] Tras SALIR, pulsar teclas de juego en otra página no lanza errores ni desplaza la página (listeners eliminados).
-- [ ] `scores` no contiene filas de prueba de `bloques` al terminar.
-- [ ] `npm run lint` y `npm run build` pasan; `get_advisors` sin hallazgos nuevos.
-- [ ] No hay errores en la consola durante una partida completa.
+- [X] `games` contiene la fila `bloques` y `games_with_stats` la devuelve con `best = 0` y `plays = 0` sin puntuaciones.
+- [X] `/biblioteca` muestra la tarjeta BLOQUES con la portada `.cover-bloques`; el filtro "PUZZLE" la incluye.
+- [X] `.cover-tetro` ya no existe en `app/globals.css`.
+- [X] `/juegos/bloques` muestra el Detalle con sus textos; "JUGAR AHORA" navega a `/juegos/bloques/jugar`.
+- [X] En `/juegos/bloques/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, sin `.game-arena`.
+- [X] El tablero 10×20 se dibuja centrado (280×560) con LÍNEAS a la izquierda y SIGUIENTE a la derecha, mostrando la pieza que aparece a continuación.
+- [X] `←`/`→` mueven, `↑` y `X` rotan, `↓` hace soft drop y `Espacio` hard drop; ninguna tecla de juego desplaza la página.
+- [X] Solo aparecen las 7 piezas estándar, cada una con su color (I cyan, O amarillo, S verde, Z magenta, T violeta, L naranja, J azul) y brillo neón; nunca la pieza "tuerca".
+- [X] Rotar una pieza I pegada a la pared aplica wall kick en lugar de bloquear la rotación.
+- [X] Cada fila de soft drop suma 1 punto; un hard drop suma 2 × filas recorridas.
+- [X] En nivel 1, limpiar 1/2/3/4 líneas suma 100/300/500/800; en nivel 2, limpiar 4 líneas suma 1600.
+- [X] Al llegar a 10 líneas el nivel del HUD React pasa a 02 y la caída automática se acelera (910 ms por fila).
+- [X] La pieza fantasma se ve a baja opacidad en la posición de aterrizaje.
+- [X] La puntuación nunca supera 1.000.000.
+- [X] El HUD React muestra puntuación y nivel, sin la stat "Vidas"; el canvas no dibuja SCORE/NIVEL ni overlays de pausa/game over.
+- [X] `/juegos/asteroides/jugar` sigue mostrando sus vidas `♥` en el HUD.
+- [X] PAUSA congela la partida (la pieza no cae ni responde a teclas) y muestra "EN PAUSA"; REANUDAR la continúa; `P` y `Escape` hacen lo mismo.
+- [X] Que una pieza nueva colisione al aparecer, y FIN, abren el modal "FIN DEL JUEGO" con la puntuación real.
+- [X] GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'bloques'`, nombre en mayúsculas y la puntuación final; aparece en `/salon?juego=bloques` al recargar.
+- [X] `/salon` muestra una tab BLOQUES que cambia el parámetro `juego` de la URL.
+- [X] JUGAR DE NUEVO reinicia a puntuación 0, 0 líneas, nivel 1 y tablero vacío.
+- [X] Tras SALIR, pulsar teclas de juego en otra página no lanza errores ni desplaza la página (listeners eliminados).
+- [X] `scores` no contiene filas de prueba de `bloques` al terminar.
+- [X] `npm run lint` y `npm run build` pasan; `get_advisors` sin hallazgos nuevos.
+- [X] No hay errores en la consola durante una partida completa.
 
 ---
 
