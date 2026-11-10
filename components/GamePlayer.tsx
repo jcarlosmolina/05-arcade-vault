@@ -11,7 +11,7 @@ import type { GameInstance } from '@/app/games/types';
 export default function GamePlayer({ game }: { game: Game }) {
   const { user } = useSession();
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
+  const [lives, setLives] = useState<number | null>(3);
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
@@ -134,10 +134,12 @@ export default function GamePlayer({ game }: { game: Game }) {
             <div className="l">Puntuación</div>
             <div className="v">{score.toLocaleString('es-ES')}</div>
           </div>
-          <div className="hud-stat lives">
-            <div className="l">Vidas</div>
-            <div className="v">{'♥ '.repeat(lives).trim() || '—'}</div>
-          </div>
+          {lives !== null && (
+            <div className="hud-stat lives">
+              <div className="l">Vidas</div>
+              <div className="v">{'♥ '.repeat(lives).trim() || '—'}</div>
+            </div>
+          )}
           <div className="hud-stat level">
             <div className="l">Nivel</div>
             <div className="v">{String(level).padStart(2, '0')}</div>
@@ -245,7 +247,11 @@ export default function GamePlayer({ game }: { game: Game }) {
                 {saveStatus === 'error' && (
                   <div
                     className="pixel"
-                    style={{ fontSize: 10, color: 'var(--magenta)', marginTop: 10 }}
+                    style={{
+                      fontSize: 10,
+                      color: 'var(--magenta)',
+                      marginTop: 10,
+                    }}
                   >
                     NO SE PUDO GUARDAR
                   </div>
