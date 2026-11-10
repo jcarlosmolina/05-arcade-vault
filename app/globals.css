@@ -736,6 +736,57 @@ a {
     0 0 16px #aa00ff;
 }
 
+/* Ladrillos: filas de ladrillos neón en la parte alta con un hueco abierto,
+   bola con halo cyan y pala cyan en la base. */
+.cover-ladrillos {
+  background: radial-gradient(circle at 50% 100%, #003a4a, #0a0a18);
+}
+.cover-ladrillos::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 10%;
+  height: 38%;
+  /* 3 filas × 7 columnas (periodo 14.2857 %); la fila central tiene un hueco en la 4.ª columna. */
+  background:
+    repeating-linear-gradient(
+        90deg,
+        #ff006e 0 12.5%,
+        transparent 12.5% 14.2857%
+      )
+      0 0 / 100% 28% no-repeat,
+    repeating-linear-gradient(
+        90deg,
+        #f5ff00 0 12.5%,
+        transparent 12.5% 14.2857%
+      )
+      0 50% / 42.857% 28% no-repeat,
+    repeating-linear-gradient(
+        90deg,
+        #f5ff00 0 12.5%,
+        transparent 12.5% 14.2857%
+      )
+      100% 50% / 42.857% 28% no-repeat,
+    repeating-linear-gradient(
+        90deg,
+        #00ff88 0 12.5%,
+        transparent 12.5% 14.2857%
+      )
+      0 100% / 100% 28% no-repeat;
+  filter: drop-shadow(0 0 6px rgba(255, 0, 110, 0.5));
+}
+.cover-ladrillos::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle, #fff 0 2px, #00f5ff 3px 6px, transparent 7px) 52%
+      66% / 16px 16px no-repeat,
+    linear-gradient(#00f5ff, #00f5ff) 50% 92% / 34% 6px no-repeat;
+  filter: drop-shadow(0 0 8px #00f5ff) drop-shadow(0 0 16px #00f5ff);
+}
+
 .cover-snake {
   background: linear-gradient(135deg, #003a2a, #0a0a18);
 }
