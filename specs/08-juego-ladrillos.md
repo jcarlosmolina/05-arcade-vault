@@ -1,6 +1,6 @@
 # SPEC 08 — Juego real de ladrillos en el Reproductor
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06
 > **Date:** 2026-11-10
 > **Objective:** Portar a TypeScript el juego de `references/started-games/04-arkanoid/` y ejecutarlo como juego real en `/juegos/ladrillos/jugar`, conectado al HUD y al modal de fin de partida, con su fila en `games` y puntuaciones guardadas en `scores`.
@@ -100,36 +100,36 @@ Estado interno del motor (privado a `engine.ts`): `paddle` (`x`), `ball` (`x`, `
 
 ## Acceptance criteria
 
-- [ ] `games` contiene la fila `ladrillos` y `games_with_stats` la devuelve con `best = 0` y `plays = 0` sin puntuaciones.
-- [ ] `/biblioteca` muestra la tarjeta LADRILLOS con la portada `.cover-ladrillos`; el filtro "ARCADE" la incluye.
-- [ ] `/juegos/ladrillos` muestra el Detalle con sus textos; "JUGAR AHORA" navega a `/juegos/ladrillos/jugar`.
-- [ ] En `/juegos/ladrillos/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, sin `.game-arena`.
-- [ ] `←`/`→` mueven la pala a 400 px/s sin salir del canvas y ninguna de esas teclas desplaza la página.
-- [ ] Mover el ratón sobre el canvas centra la pala bajo el cursor, también con el canvas escalado por CSS, y sin salir de `[0, 719]`.
-- [ ] Al iniciar, la bola nace sobre la pala y se mueve de inmediato con `vx = 200`, `vy = −300` (nivel 1).
-- [ ] La bola rebota en pared izquierda, derecha, techo y pala; si no llega a la pala, cae y se pierde.
-- [ ] Romper un ladrillo suma 10 puntos en el HUD React e invierte la velocidad vertical de la bola.
-- [ ] Perder la bola resta una vida en el HUD React (3→2) y la bola reaparece sobre la pala sin tocar los ladrillos restantes.
-- [ ] Perder la tercera vida abre el modal "FIN DEL JUEGO" con la puntuación real; el canvas no dibuja "GAME OVER".
-- [ ] Destruir los 60 ladrillos del nivel 1 pone el nivel del HUD en 02, muestra la pirámide invertida de 40 ladrillos y la bola va a `vx = 220`, `vy = −330`.
-- [ ] Los niveles 3, 4 y 5 tienen 30, 39 y 39 ladrillos y velocidades ×1.21, ×1.33 y ×1.46.
-- [ ] Completar el nivel 5 pone el nivel en 06, vuelve a mostrarse la rejilla completa del nivel 1 y la bola es más rápida que en el nivel 5; no aparece "¡Completaste el juego!".
-- [ ] La velocidad de la bola nunca supera el multiplicador 2.0 (`|vy| ≤ 600`).
-- [ ] Pala, bola y ladrillos se dibujan con los sprites de `spritesheet-breakout.png` (pala a 81×14, ladrillos a 64×24), sin 404 en `/games/ladrillos/spritesheet-breakout.png`.
-- [ ] Cada ladrillo roto muestra una animación de 4 frames de ~150 ms con los frames de su color y desaparece al terminar.
-- [ ] Rebotes y rotura de ladrillos reproducen sus sonidos; sin errores de consola si el navegador bloquea el audio; sin 404 en `/games/ladrillos/sounds/*`.
-- [ ] El HUD React muestra puntuación, vidas `♥` y nivel; el canvas no dibuja SCORE/NIVEL/vidas ni overlays de pausa/game over/victoria.
-- [ ] PAUSA congela la partida (bola y pala quietas, el ratón no mueve la pala) y muestra "EN PAUSA"; REANUDAR la continúa; `P` y `Escape` hacen lo mismo; no hay selector de nivel.
-- [ ] FIN abre el modal "FIN DEL JUEGO" con la puntuación actual.
-- [ ] GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'ladrillos'`, nombre en mayúsculas y la puntuación final; aparece en `/salon?juego=ladrillos` al recargar.
-- [ ] `/salon` muestra una tab LADRILLOS que cambia el parámetro `juego` de la URL.
-- [ ] JUGAR DE NUEVO reinicia a puntuación 0, 3 vidas, nivel 1 y rejilla del nivel 1.
-- [ ] La puntuación nunca supera 1.000.000.
-- [ ] Tras SALIR, pulsar teclas de juego o mover el ratón en otra página no lanza errores ni desplaza la página (listeners eliminados).
-- [ ] `/juegos/asteroides/jugar` y `/juegos/bloques/jugar` siguen funcionando igual que antes.
-- [ ] `scores` no contiene filas de prueba de `ladrillos` al terminar.
-- [ ] `npm run lint` y `npm run build` pasan; `get_advisors` sin hallazgos nuevos.
-- [ ] No hay errores en la consola durante una partida completa.
+- [X] `games` contiene la fila `ladrillos` y `games_with_stats` la devuelve con `best = 0` y `plays = 0` sin puntuaciones.
+- [X] `/biblioteca` muestra la tarjeta LADRILLOS con la portada `.cover-ladrillos`; el filtro "ARCADE" la incluye.
+- [X] `/juegos/ladrillos` muestra el Detalle con sus textos; "JUGAR AHORA" navega a `/juegos/ladrillos/jugar`.
+- [X] En `/juegos/ladrillos/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, sin `.game-arena`.
+- [X] `←`/`→` mueven la pala a 400 px/s sin salir del canvas y ninguna de esas teclas desplaza la página.
+- [X] Mover el ratón sobre el canvas centra la pala bajo el cursor, también con el canvas escalado por CSS, y sin salir de `[0, 719]`.
+- [X] Al iniciar, la bola nace sobre la pala y se mueve de inmediato con `vx = 200`, `vy = −300` (nivel 1).
+- [X] La bola rebota en pared izquierda, derecha, techo y pala; si no llega a la pala, cae y se pierde.
+- [X] Romper un ladrillo suma 10 puntos en el HUD React e invierte la velocidad vertical de la bola.
+- [X] Perder la bola resta una vida en el HUD React (3→2) y la bola reaparece sobre la pala sin tocar los ladrillos restantes.
+- [X] Perder la tercera vida abre el modal "FIN DEL JUEGO" con la puntuación real; el canvas no dibuja "GAME OVER".
+- [X] Destruir los 60 ladrillos del nivel 1 pone el nivel del HUD en 02, muestra la pirámide invertida de 40 ladrillos y la bola va a `vx = 220`, `vy = −330`.
+- [X] Los niveles 3, 4 y 5 tienen 30, 39 y 39 ladrillos y velocidades ×1.21, ×1.33 y ×1.46.
+- [X] Completar el nivel 5 pone el nivel en 06, vuelve a mostrarse la rejilla completa del nivel 1 y la bola es más rápida que en el nivel 5; no aparece "¡Completaste el juego!".
+- [X] La velocidad de la bola nunca supera el multiplicador 2.0 (`|vy| ≤ 600`).
+- [X] Pala, bola y ladrillos se dibujan con los sprites de `spritesheet-breakout.png` (pala a 81×14, ladrillos a 64×24), sin 404 en `/games/ladrillos/spritesheet-breakout.png`.
+- [X] Cada ladrillo roto muestra una animación de 4 frames de ~150 ms con los frames de su color y desaparece al terminar.
+- [X] Rebotes y rotura de ladrillos reproducen sus sonidos; sin errores de consola si el navegador bloquea el audio; sin 404 en `/games/ladrillos/sounds/*`.
+- [X] El HUD React muestra puntuación, vidas `♥` y nivel; el canvas no dibuja SCORE/NIVEL/vidas ni overlays de pausa/game over/victoria.
+- [X] PAUSA congela la partida (bola y pala quietas, el ratón no mueve la pala) y muestra "EN PAUSA"; REANUDAR la continúa; `P` y `Escape` hacen lo mismo; no hay selector de nivel.
+- [X] FIN abre el modal "FIN DEL JUEGO" con la puntuación actual.
+- [X] GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'ladrillos'`, nombre en mayúsculas y la puntuación final; aparece en `/salon?juego=ladrillos` al recargar.
+- [X] `/salon` muestra una tab LADRILLOS que cambia el parámetro `juego` de la URL.
+- [X] JUGAR DE NUEVO reinicia a puntuación 0, 3 vidas, nivel 1 y rejilla del nivel 1.
+- [X] La puntuación nunca supera 1.000.000.
+- [X] Tras SALIR, pulsar teclas de juego o mover el ratón en otra página no lanza errores ni desplaza la página (listeners eliminados).
+- [X] `/juegos/asteroides/jugar` y `/juegos/bloques/jugar` siguen funcionando igual que antes.
+- [X] `scores` no contiene filas de prueba de `ladrillos` al terminar.
+- [X] `npm run lint` y `npm run build` pasan; `get_advisors` sin hallazgos nuevos.
+- [X] No hay errores en la consola durante una partida completa.
 
 ---
 
