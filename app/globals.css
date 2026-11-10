@@ -693,23 +693,47 @@ a {
   );
 }
 
-.cover-tetro {
+/* Bloques: pila de bloques neón con una línea casi completa en la base y una
+   pieza T cayendo encima. */
+.cover-bloques {
   background: radial-gradient(circle at 50% 100%, #2a004a, #0a0a18);
 }
-.cover-tetro::after {
+.cover-bloques::after {
   content: '';
   position: absolute;
-  inset: 20% 30% 0 30%;
+  left: 30%;
+  right: 30%;
+  bottom: 0;
+  height: 36%;
+  /* Celdas de 6 columnas × 3 filas; el hueco de la base está en la 5.ª columna. */
   background:
-    linear-gradient(#00f5ff, #00f5ff) 0 0/25% 33%,
-    linear-gradient(#ff006e, #ff006e) 25% 0/25% 33%,
-    linear-gradient(#f5ff00, #f5ff00) 50% 33%/25% 33%,
-    linear-gradient(#00ff88, #00ff88) 25% 66%/25% 33%,
-    linear-gradient(#ff7700, #ff7700) 50% 66%/25% 33%,
-    linear-gradient(#aa00ff, #aa00ff) 75% 33%/25% 33%;
-  background-repeat: no-repeat;
-  filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.4));
+    linear-gradient(#aa00ff, #aa00ff) 20% 0 / 16.667% 33.333% no-repeat,
+    linear-gradient(#aa00ff, #aa00ff) 40% 0 / 16.667% 33.333% no-repeat,
+    linear-gradient(#f5ff00, #f5ff00) 0 50% / 16.667% 33.333% no-repeat,
+    linear-gradient(#f5ff00, #f5ff00) 20% 50% / 16.667% 33.333% no-repeat,
+    linear-gradient(#ff7700, #ff7700) 40% 50% / 16.667% 33.333% no-repeat,
+    linear-gradient(#3a7bff, #3a7bff) 80% 50% / 16.667% 33.333% no-repeat,
+    linear-gradient(#00f5ff, #00f5ff) 0 100% / 16.667% 33.333% no-repeat,
+    linear-gradient(#00f5ff, #00f5ff) 20% 100% / 16.667% 33.333% no-repeat,
+    linear-gradient(#00ff88, #00ff88) 40% 100% / 16.667% 33.333% no-repeat,
+    linear-gradient(#00ff88, #00ff88) 60% 100% / 16.667% 33.333% no-repeat,
+    linear-gradient(#ff006e, #ff006e) 100% 100% / 16.667% 33.333% no-repeat;
+  filter: drop-shadow(0 0 8px rgba(255, 0, 110, 0.5));
   image-rendering: pixelated;
+}
+.cover-bloques::before {
+  content: '███\A █ ';
+  white-space: pre;
+  position: absolute;
+  left: 42%;
+  top: 8%;
+  font-family: var(--mono);
+  font-size: 26px;
+  line-height: 0.9;
+  color: #aa00ff;
+  text-shadow:
+    0 0 8px #aa00ff,
+    0 0 16px #aa00ff;
 }
 
 .cover-snake {

@@ -1,6 +1,6 @@
 export interface GameStats {
   score: number;
-  lives: number;
+  lives: number | null; // null = el juego no tiene vidas
   level: number;
 }
 
