@@ -1,6 +1,6 @@
 # SPEC 09 — Juego real de serpiente en el Reproductor
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06
 > **Date:** 2026-11-11
 > **Objective:** Crear el juego de género Serpiente (estilo arcade clásico) usando los recursos de `references/source-assets/snake-assets/` y ejecutarlo como juego real en `/juegos/serpiente/jugar`, conectado al HUD y al modal de fin de partida, con su fila en `games` y puntuaciones guardadas en `scores`.
@@ -94,32 +94,32 @@ Estado interno del motor (privado a `engine.ts`): `snake` (segmentos `{ col, row
 
 ## Acceptance criteria
 
-- [ ] `games` contiene la fila `serpiente` y `games_with_stats` la devuelve con `best = 0` y `plays = 0` sin puntuaciones.
-- [ ] `/biblioteca` muestra la tarjeta SERPIENTE con la portada `.cover-serpiente`; el filtro "ARCADE" la incluye.
-- [ ] `/juegos/serpiente` muestra el Detalle con sus textos; "JUGAR AHORA" navega a `/juegos/serpiente/jugar`.
-- [ ] En `/juegos/serpiente/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, sin `.game-arena`.
-- [ ] Al iniciar, la serpiente mide 3 celdas, la cabeza está en (col 5, fila 7) y avanza hacia la derecha una celda por tick de 0.15 s.
-- [ ] Flechas y `WASD` cambian la dirección; pulsar la dirección opuesta a la actual no tiene efecto; ninguna tecla de juego desplaza la página.
-- [ ] Dos giros pulsados dentro del mismo tick aplican solo el último válido y nunca producen una inversión de 180° en un tick.
-- [ ] Siempre hay exactamente una fruta en una celda no ocupada por la serpiente, dibujada con un sprite de `fruits.png`.
-- [ ] Comer una fruta en nivel 1 suma 10 puntos, la serpiente crece 1 celda y aparece otra fruta; en nivel 2 suma 20.
-- [ ] Comer la 5.ª fruta pone el nivel del HUD en 02 y el intervalo de tick pasa a 0.1395 s; el intervalo nunca baja de 0.06 s.
-- [ ] Chocar con un muro resta una vida en el HUD React (3→2) y la serpiente reaparece con longitud 3, conservando puntuación y nivel.
-- [ ] Chocar con el propio cuerpo resta una vida igual que el muro.
-- [ ] Perder la tercera vida abre el modal "FIN DEL JUEGO" con la puntuación real; el canvas no dibuja "GAME OVER".
-- [ ] La puntuación nunca supera 1.000.000.
-- [ ] El HUD React muestra puntuación, vidas `♥` y nivel; el canvas no dibuja su propio HUD ni overlays de pausa/game over.
-- [ ] PAUSA congela la partida (la serpiente no avanza) y muestra "EN PAUSA"; REANUDAR la continúa sin saltos; `P` y `Escape` hacen lo mismo.
-- [ ] FIN abre el modal "FIN DEL JUEGO" con la puntuación actual.
-- [ ] GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'serpiente'`, nombre en mayúsculas y la puntuación final; aparece en `/salon?juego=serpiente` al recargar.
-- [ ] `/salon` muestra una tab SERPIENTE que cambia el parámetro `juego` de la URL.
-- [ ] JUGAR DE NUEVO reinicia a puntuación 0, 3 vidas, nivel 1 y serpiente de longitud 3.
-- [ ] La serpiente se dibuja en neón verde con brillo y no hay 404 en `/games/serpiente/fruits.png`.
-- [ ] Tras SALIR, pulsar teclas de juego en otra página no lanza errores ni desplaza la página (listeners eliminados).
-- [ ] `/juegos/asteroides/jugar`, `/juegos/bloques/jugar` y `/juegos/ladrillos/jugar` siguen funcionando igual que antes.
-- [ ] `scores` no contiene filas de prueba de `serpiente` al terminar.
-- [ ] `npm run lint` y `npm run build` pasan; `get_advisors` sin hallazgos nuevos.
-- [ ] No hay errores en la consola durante una partida completa.
+- [X] `games` contiene la fila `serpiente` y `games_with_stats` la devuelve con `best = 0` y `plays = 0` sin puntuaciones.
+- [X] `/biblioteca` muestra la tarjeta SERPIENTE con la portada `.cover-serpiente`; el filtro "ARCADE" la incluye.
+- [X] `/juegos/serpiente` muestra el Detalle con sus textos; "JUGAR AHORA" navega a `/juegos/serpiente/jugar`.
+- [X] En `/juegos/serpiente/jugar` se renderiza un `<canvas>` de 800×600 lógicos dentro de `.crt-screen`, sin `.game-arena`.
+- [X] Al iniciar, la serpiente mide 3 celdas, la cabeza está en (col 5, fila 7) y avanza hacia la derecha una celda por tick de 0.15 s.
+- [X] Flechas y `WASD` cambian la dirección; pulsar la dirección opuesta a la actual no tiene efecto; ninguna tecla de juego desplaza la página.
+- [X] Dos giros pulsados dentro del mismo tick aplican solo el último válido y nunca producen una inversión de 180° en un tick.
+- [X] Siempre hay exactamente una fruta en una celda no ocupada por la serpiente, dibujada con un sprite de `fruits.png`.
+- [X] Comer una fruta en nivel 1 suma 10 puntos, la serpiente crece 1 celda y aparece otra fruta; en nivel 2 suma 20.
+- [X] Comer la 5.ª fruta pone el nivel del HUD en 02 y el intervalo de tick pasa a 0.1395 s; el intervalo nunca baja de 0.06 s.
+- [X] Chocar con un muro resta una vida en el HUD React (3→2) y la serpiente reaparece con longitud 3, conservando puntuación y nivel.
+- [X] Chocar con el propio cuerpo resta una vida igual que el muro.
+- [X] Perder la tercera vida abre el modal "FIN DEL JUEGO" con la puntuación real; el canvas no dibuja "GAME OVER".
+- [X] La puntuación nunca supera 1.000.000.
+- [X] El HUD React muestra puntuación, vidas `♥` y nivel; el canvas no dibuja su propio HUD ni overlays de pausa/game over.
+- [X] PAUSA congela la partida (la serpiente no avanza) y muestra "EN PAUSA"; REANUDAR la continúa sin saltos; `P` y `Escape` hacen lo mismo.
+- [X] FIN abre el modal "FIN DEL JUEGO" con la puntuación actual.
+- [X] GUARDAR PUNTUACIÓN crea una fila en `scores` con `game_id = 'serpiente'`, nombre en mayúsculas y la puntuación final; aparece en `/salon?juego=serpiente` al recargar.
+- [X] `/salon` muestra una tab SERPIENTE que cambia el parámetro `juego` de la URL.
+- [X] JUGAR DE NUEVO reinicia a puntuación 0, 3 vidas, nivel 1 y serpiente de longitud 3.
+- [X] La serpiente se dibuja en neón verde con brillo y no hay 404 en `/games/serpiente/fruits.png`.
+- [X] Tras SALIR, pulsar teclas de juego en otra página no lanza errores ni desplaza la página (listeners eliminados).
+- [X] `/juegos/asteroides/jugar`, `/juegos/bloques/jugar` y `/juegos/ladrillos/jugar` siguen funcionando igual que antes.
+- [X] `scores` no contiene filas de prueba de `serpiente` al terminar.
+- [X] `npm run lint` y `npm run build` pasan; `get_advisors` sin hallazgos nuevos.
+- [X] No hay errores en la consola durante una partida completa.
 
 ---
 
