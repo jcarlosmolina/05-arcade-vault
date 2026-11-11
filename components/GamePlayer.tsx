@@ -7,6 +7,8 @@ import { createClient } from '@/app/lib/supabase/client';
 import type { Game } from '@/app/data/games';
 import { GAME_ENGINES } from '@/app/games/registry';
 import type { GameInstance } from '@/app/games/types';
+import { SKIN_IDS, SKIN_LABELS, nextSkin } from '@/app/games/skins';
+import { useSkin } from '@/components/useSkin';
 
 export default function GamePlayer({ game }: { game: Game }) {
   const { user } = useSession();
@@ -26,20 +28,53 @@ export default function GamePlayer({ game }: { game: Game }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameInstance | null>(null);
 
+  // ── Skin global (localStorage) ──
+  // Se declara antes del montaje del motor para que el ref ya tenga el valor
+  // al crearlo; los cambios posteriores se aplican en caliente con setSkin.
+  const [skin, setSkin] = useSkin();
+  const skinRef = useRef(skin);
+  useEffect(() => {
+    skinRef.current = skin;
+    engineRef.current?.setSkin?.(skin);
+  }, [skin]);
+
+  // Tecla T cicla el skin (solo juegos reales; ignorada en campos de texto).
+  useEffect(() => {
+    if (!isReal) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'KeyT' || e.repeat) return;
+      const t = e.target;
+      if (
+        t instanceof HTMLElement &&
+        (t.tagName === 'INPUT' ||
+          t.tagName === 'TEXTAREA' ||
+          t.isContentEditable)
+      )
+        return;
+      setSkin(nextSkin(skinRef.current));
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isReal, setSkin]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!engineFactory || !canvas) return;
-    const instance = engineFactory(canvas, {
-      onStats: (stats) => {
-        setScore(stats.score);
-        setLives(stats.lives);
-        setLevel(stats.level);
+    const instance = engineFactory(
+      canvas,
+      {
+        onStats: (stats) => {
+          setScore(stats.score);
+          setLives(stats.lives);
+          setLevel(stats.level);
+        },
+        onGameOver: (finalScore) => {
+          setScore(finalScore);
+          setOver(true);
+        },
       },
-      onGameOver: (finalScore) => {
-        setScore(finalScore);
-        setOver(true);
-      },
-    });
+      { skin: skinRef.current },
+    );
     engineRef.current = instance;
     return () => {
       instance.destroy();
@@ -210,6 +245,29 @@ export default function GamePlayer({ game }: { game: Game }) {
           <span className="led">SEÑAL OK</span>
           <span>{game.title} · CRT-83 · 60 HZ</span>
           <span>CARGA · 1MB</span>
+          {isReal && (
+            <div
+              className="skin-dial"
+              role="radiogroup"
+              aria-label="Skin del juego (tecla T para cambiar)"
+            >
+              <span className="skin-dial-key" aria-hidden="true">
+                T
+              </span>
+              {SKIN_IDS.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="radio"
+                  aria-checked={skin === id}
+                  className={'skin-dial-opt ' + id + (skin === id ? ' on' : '')}
+                  onClick={() => setSkin(id)}
+                >
+                  {SKIN_LABELS[id]}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

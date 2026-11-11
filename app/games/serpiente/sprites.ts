@@ -66,9 +66,38 @@ export function loadFruits(): Promise<void> {
   return loading;
 }
 
+/** Fila del atlas usada (y=136–295): solo esa franja se tiñe. */
+const ROW_Y = 136;
+const ROW_H = 160;
+
+/** Siluetas teñidas de la fila de frutas, por color (caché del skin retro). */
+const tinted = new Map<string, HTMLCanvasElement>();
+
+/**
+ * Silueta monocroma de la fila de frutas en `color` (conserva el alpha del
+ * sprite). Se genera una vez por color y se reutiliza.
+ */
+function tintedRow(color: string): HTMLCanvasElement | null {
+  if (!img) return null;
+  const cached = tinted.get(color);
+  if (cached) return cached;
+  const off = document.createElement('canvas');
+  off.width = img.width;
+  off.height = ROW_H;
+  const octx = off.getContext('2d');
+  if (!octx) return null;
+  octx.drawImage(img, 0, ROW_Y, img.width, ROW_H, 0, 0, img.width, ROW_H);
+  octx.globalCompositeOperation = 'source-in';
+  octx.fillStyle = color;
+  octx.fillRect(0, 0, off.width, off.height);
+  tinted.set(color, off);
+  return off;
+}
+
 /**
  * Dibuja la fruta `name` centrada en (cx, cy), escalada para caber en un
- * cuadrado de `size` px conservando la proporción.
+ * cuadrado de `size` px conservando la proporción. Con `tint`, dibuja su
+ * silueta plana en ese color.
  */
 export function drawFruit(
   ctx: CanvasRenderingContext2D,
@@ -76,11 +105,19 @@ export function drawFruit(
   cx: number,
   cy: number,
   size: number,
+  tint: string | null = null,
 ): void {
   if (!img) return;
   const r = FRUIT_ATLAS[name];
   const scale = Math.min(size / r.w, size / r.h);
   const dw = r.w * scale;
   const dh = r.h * scale;
-  ctx.drawImage(img, r.x, r.y, r.w, r.h, cx - dw / 2, cy - dh / 2, dw, dh);
+  const dx = cx - dw / 2;
+  const dy = cy - dh / 2;
+  const sheet = tint ? tintedRow(tint) : null;
+  if (sheet) {
+    ctx.drawImage(sheet, r.x, r.y - ROW_Y, r.w, r.h, dx, dy, dw, dh);
+  } else {
+    ctx.drawImage(img, r.x, r.y, r.w, r.h, dx, dy, dw, dh);
+  }
 }

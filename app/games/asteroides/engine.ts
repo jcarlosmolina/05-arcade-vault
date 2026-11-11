@@ -5,11 +5,11 @@ import type {
   GameCallbacks,
   GameFactory,
   GameInstance,
+  GameOptions,
   GameStats,
 } from '../types';
+import { DEFAULT_SKIN, isSkinId } from '../skins';
 import {
-  COLORS,
-  GLOW,
   H,
   MAX_DT,
   POINTS,
@@ -30,6 +30,7 @@ import {
   dist,
   rand,
 } from './entities';
+import { SKINS, type AsteroidesPalette } from './skins';
 
 /** Teclas de juego: se les hace preventDefault para que no desplacen la página. */
 const GAME_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space']);
@@ -48,10 +49,15 @@ function isTextField(target: EventTarget | null): boolean {
 export const createAsteroidsGame: GameFactory = (
   canvas: HTMLCanvasElement,
   callbacks: GameCallbacks,
+  options?: GameOptions,
 ): GameInstance => {
   const maybeCtx = canvas.getContext('2d');
   if (!maybeCtx) throw new Error('Canvas 2D no disponible');
   const ctx: CanvasRenderingContext2D = maybeCtx;
+
+  // ── Skin (sin cachés: setSkin = cambiar paleta + redibujar) ──
+  let palette: AsteroidesPalette =
+    SKINS[isSkinId(options?.skin) ? options.skin : DEFAULT_SKIN];
 
   // ── Estado ──────────────────────────────────────────────────────────────────
   let ship = new Ship();
@@ -270,9 +276,9 @@ export const createAsteroidsGame: GameFactory = (
   function drawPowerUpTimer() {
     if (ship.tripleShot <= 0) return;
     ctx.save();
-    ctx.fillStyle = COLORS.powerUp;
-    ctx.shadowColor = COLORS.powerUp;
-    ctx.shadowBlur = GLOW;
+    ctx.fillStyle = palette.timerText;
+    ctx.shadowBlur = palette.glow;
+    ctx.shadowColor = palette.glow > 0 ? palette.timerText : 'transparent';
     ctx.font = '15px monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
@@ -281,16 +287,26 @@ export const createAsteroidsGame: GameFactory = (
   }
 
   function draw() {
-    ctx.fillStyle = COLORS.bg;
+    ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, W, H);
 
-    particles.forEach((p) => p.draw(ctx));
-    asteroids.forEach((a) => a.draw(ctx));
-    powerUps.forEach((p) => p.draw(ctx));
-    bullets.forEach((b) => b.draw(ctx));
-    ship.draw(ctx);
+    particles.forEach((p) => p.draw(ctx, palette));
+    asteroids.forEach((a) => a.draw(ctx, palette));
+    powerUps.forEach((p) => p.draw(ctx, palette));
+    bullets.forEach((b) => b.draw(ctx, palette));
+    ship.draw(ctx, palette);
 
     drawPowerUpTimer();
+    drawScanlines();
+  }
+
+  /** Scanlines pintadas sobre el canvas (solo skins que las definen). */
+  function drawScanlines() {
+    if (!palette.scanlines) return;
+    ctx.save();
+    ctx.fillStyle = palette.scanlines;
+    for (let y = 0; y < H; y += 3) ctx.fillRect(0, y, W, 1);
+    ctx.restore();
   }
 
   // ── Loop ────────────────────────────────────────────────────────────────────
@@ -351,6 +367,12 @@ export const createAsteroidsGame: GameFactory = (
       // Si estaba en pausa, el loop vuelve para animar el fondo tras el modal
       paused = false;
       startLoop();
+    },
+    setSkin(skin) {
+      if (destroyed || !isSkinId(skin)) return;
+      palette = SKINS[skin];
+      // Sin cachés que regenerar; si el loop está parado (pausa), redibuja ya.
+      if (rafId === null) draw();
     },
     destroy() {
       if (destroyed) return;

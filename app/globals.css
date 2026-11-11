@@ -1266,6 +1266,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
   margin-top: 14px;
   padding: 0 8px;
   font-family: var(--pixel);
@@ -1285,6 +1287,68 @@ a {
   border-radius: 50%;
   background: var(--green);
   box-shadow: 0 0 6px var(--green);
+}
+
+/* skin selector: channel buttons on the CRT bezel */
+.skin-dial {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--ink-faint);
+  background: #000;
+}
+.skin-dial-key {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 7px;
+  color: var(--ink-dim);
+  border-right: 1px solid var(--ink-faint);
+}
+.skin-dial-opt {
+  --dial: var(--cyan);
+  position: relative;
+  padding: 5px 9px 5px 18px;
+  font-family: var(--pixel);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.skin-dial-opt.neon {
+  --dial: var(--magenta);
+}
+.skin-dial-opt.retro {
+  --dial: var(--yellow);
+}
+.skin-dial-opt + .skin-dial-opt {
+  border-left: 1px solid var(--line-2);
+}
+.skin-dial-opt::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  background: var(--ink-faint);
+}
+.skin-dial-opt:hover {
+  color: var(--ink);
+}
+.skin-dial-opt.on {
+  color: var(--dial);
+  text-shadow: 0 0 6px var(--dial);
+}
+.skin-dial-opt.on::before {
+  background: var(--dial);
+  box-shadow: 0 0 6px var(--dial);
+}
+.skin-dial-opt:focus-visible {
+  outline: 1px solid var(--dial);
+  outline-offset: -2px;
 }
 
 /* fake in-screen game */

@@ -5,6 +5,7 @@ import type {
   GameCallbacks,
   GameFactory,
   GameInstance,
+  GameOptions,
   GameStats,
 } from '../types';
 import {
@@ -15,6 +16,7 @@ import {
   drawBoard,
   drawGhost,
   drawPiece,
+  drawScanlines,
   drawSidePanels,
   ghostY,
   merge,
@@ -35,6 +37,8 @@ import {
   MIN_DROP,
   SOFT_DROP_POINTS,
 } from './constants';
+import { SKINS, type BloquesPalette } from './skins';
+import { DEFAULT_SKIN, isSkinId } from '../skins';
 
 /** Teclas de juego: se les hace preventDefault para que no desplacen la página. */
 const GAME_KEYS = new Set([
@@ -64,6 +68,7 @@ function dropIntervalFor(level: number): number {
 export const createBloquesGame: GameFactory = (
   canvas: HTMLCanvasElement,
   callbacks: GameCallbacks,
+  options?: GameOptions,
 ): GameInstance => {
   const maybeCtx = canvas.getContext('2d');
   if (!maybeCtx) throw new Error('Canvas 2D no disponible');
@@ -81,6 +86,8 @@ export const createBloquesGame: GameFactory = (
   let state: State = 'playing';
   let paused = false;
   let destroyed = false;
+  let palette: BloquesPalette =
+    SKINS[isSkinId(options?.skin) ? options.skin : DEFAULT_SKIN];
 
   let rafId: number | null = null;
   let lastTime: number | null = null;
@@ -207,11 +214,12 @@ export const createBloquesGame: GameFactory = (
 
   // ── Draw ────────────────────────────────────────────────────────────────────
   function draw() {
-    clearCanvas(ctx);
-    drawBoard(ctx, board);
-    drawGhost(ctx, board, current);
-    drawPiece(ctx, current);
-    drawSidePanels(ctx, lines, next);
+    clearCanvas(ctx, palette);
+    drawBoard(ctx, palette, board);
+    drawGhost(ctx, palette, board, current);
+    drawPiece(ctx, palette, current);
+    drawSidePanels(ctx, palette, lines, next);
+    drawScanlines(ctx, palette);
   }
 
   // ── Loop ────────────────────────────────────────────────────────────────────
@@ -286,6 +294,12 @@ export const createBloquesGame: GameFactory = (
       if (destroyed || state === 'gameover') return;
       stopLoop();
       gameOver();
+    },
+    setSkin(skin) {
+      if (destroyed || !isSkinId(skin)) return;
+      palette = SKINS[skin];
+      // Sin cachés que regenerar: basta redibujar (cubre pausa y fin de partida).
+      draw();
     },
     destroy() {
       if (destroyed) return;
