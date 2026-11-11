@@ -1,6 +1,6 @@
 # SPEC 09 — Juego real de serpiente en el Reproductor
 
-> **Status:** Accepted
+> **Status:** Approved
 > **Depends on:** SPEC 05, SPEC 06
 > **Date:** 2026-11-11
 > **Objective:** Crear el juego de género Serpiente (estilo arcade clásico) usando los recursos de `references/source-assets/snake-assets/` y ejecutarlo como juego real en `/juegos/serpiente/jugar`, conectado al HUD y al modal de fin de partida, con su fila en `games` y puntuaciones guardadas en `scores`.
