@@ -787,6 +787,38 @@ a {
   filter: drop-shadow(0 0 8px #00f5ff) drop-shadow(0 0 16px #00f5ff);
 }
 
+/* Serpiente: serpiente neón verde en forma de S sobre fondo oscuro (::before)
+   y fruta magenta con halo neón (::after). */
+.cover-serpiente {
+  background: radial-gradient(circle at 50% 50%, #002a1e, #05060f);
+}
+.cover-serpiente::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Ojo + 3 barras horizontales (50% × 10%) + 2 verticales (10% × 35%).
+     Posiciones en %: left/(100 − ancho) y top/(100 − alto). */
+  background:
+    radial-gradient(circle at 30% 75%, #05060f 0 2px, transparent 3px),
+    linear-gradient(var(--green), var(--green)) 50% 22.2% / 50% 10% no-repeat,
+    linear-gradient(var(--green), var(--green)) 27.8% 30.8% / 10% 35% no-repeat,
+    linear-gradient(var(--green), var(--green)) 50% 50% / 50% 10% no-repeat,
+    linear-gradient(var(--green), var(--green)) 72.2% 69.2% / 10% 35% no-repeat,
+    linear-gradient(var(--green), var(--green)) 50% 77.8% / 50% 10% no-repeat;
+  filter: drop-shadow(0 0 6px var(--green))
+    drop-shadow(0 0 14px rgba(0, 255, 136, 0.5));
+}
+.cover-serpiente::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(var(--green), var(--green)) 88% 15% / 2px 5px no-repeat,
+    radial-gradient(circle at 88% 24%, var(--magenta) 0 7px, transparent 8px);
+  filter: drop-shadow(0 0 6px var(--magenta))
+    drop-shadow(0 0 14px var(--magenta));
+}
+
 .cover-snake {
   background: linear-gradient(135deg, #003a2a, #0a0a18);
 }
