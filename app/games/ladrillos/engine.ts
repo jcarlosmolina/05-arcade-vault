@@ -1,10 +1,12 @@
 // Motor del juego de ladrillos, portado de references/started-games/04-arkanoid/game.js
 // Sin globals: todo el estado vive en el closure de createLadrillosGame.
 
+import { DEFAULT_SKIN, isSkinId } from '../skins';
 import type {
   GameCallbacks,
   GameFactory,
   GameInstance,
+  GameOptions,
   GameStats,
 } from '../types';
 import {
@@ -25,10 +27,12 @@ import {
   ballHitsBlock,
   createBlocks,
   createExplosion,
+  drawBackground,
   drawBall,
   drawBlock,
   drawExplosion,
   drawPaddle,
+  drawScanlines,
   placeBall,
   type Ball,
   type Block,
@@ -36,6 +40,7 @@ import {
   type Paddle,
 } from './entities';
 import { levelSpeed } from './levels';
+import { SKINS, type LadrillosPalette } from './skins';
 import { loadSpritesheet } from './sprites';
 
 /** Teclas de juego: se les hace preventDefault para que no desplacen la página. */
@@ -58,6 +63,7 @@ function isTextField(target: EventTarget | null): boolean {
 export const createLadrillosGame: GameFactory = (
   canvas: HTMLCanvasElement,
   callbacks: GameCallbacks,
+  options?: GameOptions,
 ): GameInstance => {
   const maybeCtx = canvas.getContext('2d');
   if (!maybeCtx) throw new Error('Canvas 2D no disponible');
@@ -89,6 +95,8 @@ export const createLadrillosGame: GameFactory = (
   let paused = false;
   let destroyed = false;
   const keys = { ArrowLeft: false, ArrowRight: false };
+  let palette: LadrillosPalette =
+    SKINS[isSkinId(options?.skin) ? options.skin : DEFAULT_SKIN];
 
   let rafId: number | null = null;
   let lastTime: number | null = null;
@@ -237,12 +245,12 @@ export const createLadrillosGame: GameFactory = (
 
   // ── Draw ────────────────────────────────────────────────────────────────────
   function draw() {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
-    for (const block of blocks) drawBlock(ctx, block);
-    for (const exp of explosions) drawExplosion(ctx, exp);
-    drawPaddle(ctx, paddle);
-    drawBall(ctx, ball);
+    drawBackground(ctx, palette, W, H);
+    for (const block of blocks) drawBlock(ctx, palette, block);
+    for (const exp of explosions) drawExplosion(ctx, palette, exp);
+    drawPaddle(ctx, palette, paddle);
+    drawBall(ctx, palette, ball);
+    drawScanlines(ctx, palette, W, H);
   }
 
   // ── Loop ────────────────────────────────────────────────────────────────────
@@ -323,6 +331,13 @@ export const createLadrillosGame: GameFactory = (
       if (destroyed || state === 'gameover') return;
       stopLoop();
       gameOver();
+    },
+    setSkin(skin) {
+      if (destroyed || !isSkinId(skin)) return;
+      palette = SKINS[skin];
+      // Bloques vectoriales cacheados por paleta (lazy): basta redibujar
+      // (cubre pausa y fin de partida). El spritesheet de clasico no cambia.
+      draw();
     },
     destroy() {
       if (destroyed) return;

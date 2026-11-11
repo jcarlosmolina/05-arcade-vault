@@ -74,14 +74,4 @@ export const BASE_DROP = 1.0;
 export const DROP_STEP = 0.09;
 export const MIN_DROP = 0.1;
 
-// ── Paleta neón (índice = tipo de pieza) ──────────────────────────────────────
-export const COLORS: readonly string[] = [
-  '',
-  '#00f5ff', // I  → --cyan
-  '#f5ff00', // O  → --yellow
-  '#aa00ff', // T  → violeta
-  '#00ff88', // S  → --green
-  '#ff006e', // Z  → --magenta
-  '#3a7bff', // J  → azul
-  '#ff7700', // L  → naranja
-];
+// Colores: ver ./skins.ts (paletas por skin).

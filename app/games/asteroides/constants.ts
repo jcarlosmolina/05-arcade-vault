@@ -48,15 +48,4 @@ export const START_LIVES = 3;
 /** Espera tras perder una vida antes de reaparecer (s). */
 export const RESPAWN_DELAY = 2;
 
-// ── Paleta neón (valores de las variables de app/globals.css) ────────────────
-export const COLORS = {
-  bg: '#0a0a0f', // --bg
-  ship: '#00f5ff', // --cyan
-  asteroid: '#ff006e', // --magenta
-  bullet: '#f5ff00', // --yellow
-  flame: '#f5ff00', // --yellow
-  powerUp: '#00ff88', // --green
-} as const;
-
-/** Intensidad del brillo neón (shadowBlur). */
-export const GLOW = 12;
+// Colores y glow: ver ./skins.ts (paleta por skin).

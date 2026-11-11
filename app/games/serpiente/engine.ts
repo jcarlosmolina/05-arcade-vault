@@ -5,6 +5,7 @@ import type {
   GameCallbacks,
   GameFactory,
   GameInstance,
+  GameOptions,
   GameStats,
 } from '../types';
 import {
@@ -24,6 +25,7 @@ import {
   DIR_VECTORS,
   drawBoard,
   drawFruitAt,
+  drawScanlines,
   drawSnake,
   OPPOSITE,
   spawnFruit,
@@ -31,6 +33,8 @@ import {
   type Dir,
   type Fruit,
 } from './entities';
+import { DEFAULT_SKIN, isSkinId } from '../skins';
+import { SKINS, type SerpientePalette } from './skins';
 import { loadFruits } from './sprites';
 
 /** Teclas de juego → dirección. Se les hace preventDefault. */
@@ -64,6 +68,7 @@ function tickInterval(level: number): number {
 export const createSerpienteGame: GameFactory = (
   canvas: HTMLCanvasElement,
   callbacks: GameCallbacks,
+  options?: GameOptions,
 ): GameInstance => {
   const maybeCtx = canvas.getContext('2d');
   if (!maybeCtx) throw new Error('Canvas 2D no disponible');
@@ -85,6 +90,8 @@ export const createSerpienteGame: GameFactory = (
   let state: State = 'playing';
   let paused = false;
   let destroyed = false;
+  let palette: SerpientePalette =
+    SKINS[isSkinId(options?.skin) ? options.skin : DEFAULT_SKIN];
 
   let rafId: number | null = null;
   let lastTime: number | null = null;
@@ -217,9 +224,10 @@ export const createSerpienteGame: GameFactory = (
 
   // ── Draw ────────────────────────────────────────────────────────────────────
   function draw() {
-    drawBoard(ctx);
-    if (fruit) drawFruitAt(ctx, fruit);
-    drawSnake(ctx, snake, dir);
+    drawBoard(ctx, palette);
+    if (fruit) drawFruitAt(ctx, palette, fruit);
+    drawSnake(ctx, palette, snake, dir);
+    drawScanlines(ctx, palette);
   }
 
   // ── Loop ────────────────────────────────────────────────────────────────────
@@ -306,6 +314,12 @@ export const createSerpienteGame: GameFactory = (
       destroyed = true;
       stopLoop();
       window.removeEventListener('keydown', onKeyDown);
+    },
+    setSkin(skin) {
+      if (destroyed || !isSkinId(skin)) return;
+      palette = SKINS[skin];
+      // Redibuja ya (también en pausa o game over); no toca el estado de juego.
+      draw();
     },
   };
 };

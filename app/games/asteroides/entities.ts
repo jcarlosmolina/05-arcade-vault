@@ -4,8 +4,6 @@
 import {
   BULLET_SPEED,
   BULLET_TTL,
-  COLORS,
-  GLOW,
   H,
   POWERUP_TTL,
   RADII,
@@ -20,6 +18,7 @@ import {
   TRIPLE_SPREAD,
   W,
 } from './constants';
+import type { AsteroidesPalette } from './skins';
 
 // ── Utils ─────────────────────────────────────────────────────────────────────
 export const wrap = (v: number, max: number) => ((v % max) + max) % max;
@@ -33,6 +32,27 @@ export const randInt = (min: number, max: number) =>
   Math.floor(rand(min, max + 1));
 
 export type AsteroidSize = 1 | 2 | 3;
+
+/** Aplica el glow del skin (0 = sin glow) con el color dado. */
+function applyGlow(
+  ctx: CanvasRenderingContext2D,
+  pal: AsteroidesPalette,
+  color: string,
+) {
+  ctx.shadowBlur = pal.glow;
+  ctx.shadowColor = pal.glow > 0 ? color : 'transparent';
+}
+
+/** Traslada al centro de la entidad; en estilo pixelado, a coords enteras. */
+function translateTo(
+  ctx: CanvasRenderingContext2D,
+  pal: AsteroidesPalette,
+  x: number,
+  y: number,
+) {
+  if (pal.pixel) ctx.translate(Math.round(x), Math.round(y));
+  else ctx.translate(x, y);
+}
 
 // ── Bullet ────────────────────────────────────────────────────────────────────
 export class Bullet {
@@ -58,14 +78,23 @@ export class Bullet {
     if (this.ttl <= 0) this.dead = true;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, pal: AsteroidesPalette) {
     ctx.save();
-    ctx.fillStyle = COLORS.bullet;
-    ctx.shadowColor = COLORS.bullet;
-    ctx.shadowBlur = GLOW;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillStyle = pal.bullet;
+    applyGlow(ctx, pal, pal.bullet);
+    if (pal.pixel) {
+      const r = this.radius;
+      ctx.fillRect(
+        Math.round(this.x) - r,
+        Math.round(this.y) - r,
+        r * 2,
+        r * 2,
+      );
+    } else {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.restore();
   }
 }
@@ -121,15 +150,14 @@ export class Asteroid {
     ];
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, pal: AsteroidesPalette) {
     ctx.save();
-    ctx.translate(this.x, this.y);
+    translateTo(ctx, pal, this.x, this.y);
     ctx.rotate(this.rot);
-    ctx.strokeStyle = COLORS.asteroid;
-    ctx.shadowColor = COLORS.asteroid;
-    ctx.shadowBlur = GLOW;
-    ctx.lineWidth = 1.5;
-    ctx.lineJoin = 'round';
+    ctx.strokeStyle = pal.asteroid;
+    applyGlow(ctx, pal, pal.asteroid);
+    ctx.lineWidth = pal.lineWidth;
+    ctx.lineJoin = pal.pixel ? 'miter' : 'round';
     ctx.beginPath();
     ctx.moveTo(this.verts[0][0], this.verts[0][1]);
     for (let i = 1; i < this.verts.length; i++)
@@ -166,25 +194,24 @@ export class PowerUp {
     if (this.ttl <= 0) this.dead = true;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, pal: AsteroidesPalette) {
     // Parpadeo en los últimos 2 s de vida
     if (this.ttl < 2 && Math.floor(this.ttl * 8) % 2 === 0) return;
     const pulse = 0.85 + Math.sin(performance.now() / 150) * 0.15;
     const r = this.radius * pulse;
 
     ctx.save();
-    ctx.shadowColor = COLORS.powerUp;
-    ctx.shadowBlur = GLOW;
+    applyGlow(ctx, pal, pal.powerUp);
 
     ctx.save();
-    ctx.translate(this.x, this.y);
+    translateTo(ctx, pal, this.x, this.y);
     ctx.rotate(Math.PI / 4);
-    ctx.strokeStyle = COLORS.powerUp;
+    ctx.strokeStyle = pal.powerUp;
     ctx.lineWidth = 2;
     ctx.strokeRect(-r, -r, r * 2, r * 2);
     ctx.restore();
 
-    ctx.fillStyle = COLORS.powerUp;
+    ctx.fillStyle = pal.powerUp;
     ctx.font = 'bold 12px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -221,17 +248,21 @@ export class Particle {
     if (this.ttl <= 0) this.dead = true;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, pal: AsteroidesPalette) {
     ctx.save();
     ctx.globalAlpha = Math.max(0, this.ttl / this.life);
-    ctx.strokeStyle = COLORS.asteroid;
-    ctx.shadowColor = COLORS.asteroid;
-    ctx.shadowBlur = GLOW;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.x - this.vx * 0.05, this.y - this.vy * 0.05);
-    ctx.stroke();
+    if (pal.pixel) {
+      ctx.fillStyle = pal.particle;
+      ctx.fillRect(Math.round(this.x) - 1, Math.round(this.y) - 1, 2, 2);
+    } else {
+      ctx.strokeStyle = pal.particle;
+      applyGlow(ctx, pal, pal.particle);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.x - this.vx * 0.05, this.y - this.vy * 0.05);
+      ctx.stroke();
+    }
     ctx.restore();
   }
 }
@@ -311,21 +342,21 @@ export class Ship {
     return [new Bullet(ox, oy, this.angle)];
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, pal: AsteroidesPalette) {
     if (this.dead) return;
     // Parpadeo durante invencibilidad de reaparición
-    if (this.invincible > 0 && Math.floor(this.invincible * 8) % 2 === 0) return;
+    if (this.invincible > 0 && Math.floor(this.invincible * 8) % 2 === 0)
+      return;
 
     ctx.save();
-    ctx.translate(this.x, this.y);
+    translateTo(ctx, pal, this.x, this.y);
     ctx.rotate(this.angle);
-    ctx.lineWidth = 1.5;
-    ctx.lineJoin = 'round';
-    ctx.shadowBlur = GLOW;
+    ctx.lineWidth = pal.lineWidth;
+    ctx.lineJoin = pal.pixel ? 'miter' : 'round';
 
     // Silueta clásica: triángulo con muesca trasera
-    ctx.strokeStyle = COLORS.ship;
-    ctx.shadowColor = COLORS.ship;
+    ctx.strokeStyle = pal.ship;
+    applyGlow(ctx, pal, pal.ship);
     ctx.beginPath();
     ctx.moveTo(20, 0); // nariz
     ctx.lineTo(-12, -9); // ala izquierda
@@ -336,9 +367,9 @@ export class Ship {
 
     // Llama del propulsor
     if (this.thrusting && Math.random() > 0.35) {
-      ctx.strokeStyle = COLORS.flame;
-      ctx.shadowColor = COLORS.flame;
-      ctx.globalAlpha = 0.85;
+      ctx.strokeStyle = pal.flame;
+      applyGlow(ctx, pal, pal.flame);
+      ctx.globalAlpha = pal.flameAlpha;
       ctx.beginPath();
       ctx.moveTo(-8, -4);
       ctx.lineTo(-8 - rand(6, 14), 0);

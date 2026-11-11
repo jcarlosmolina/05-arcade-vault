@@ -11,7 +11,7 @@ Arcade Vault — a platform for playing games online and competing for high scor
 Features:
 
 - Pages (`app/`): home (`page.tsx`), `biblioteca` (library + filters), `juegos/[id]` (detail), `juegos/[id]/jugar` (player), `salon` (Hall of Fame / leaderboard), `about`, `auth`, `api/contact` (Resend email).
-- Real games with canvas engines: `asteroides`, `bloques`, `ladrillos`, `serpiente` (`app/games/<id>/`),  and more.... (see `references\implemented-games.md` when you need to check which games are implemented)
+- Real games with canvas engines: `asteroides`, `bloques`, `ladrillos`, `serpiente` (`app/games/<id>/`), and more.... (see `references\implemented-games.md` when you need to check which games are implemented)
 - Games without an engine fall back to a simulation in `GamePlayer`.
 - Supabase backend: auth, `games` table + `games_with_stats` view, scores/leaderboard. Session middleware in `proxy.ts` → `app/lib/supabase/proxy.ts`.
 
@@ -29,6 +29,12 @@ There is no test runner configured in this repo yet.
 - `/spec` and `/spec-impl` — spec-driven workflow (see below).
 - `/add-game` (`.claude/skills/add-game/`) — generates the spec (`specs/NN-juego-<id>.md`) to add a real game; ports from `references/started-games/` or designs from scratch. Spec only; implement with `/spec-impl`. Supporting files: `template.md`, `integration-guide.md` (platform contract).
 - `/worktree` — isolated git worktree in `.trees/<name>`.
+
+## Agents
+
+- `game-planner` (`.claude/agents/`) — thinks/decides which new game fits the platform; memory of past suggestions in `references/game-suggestions-todo.md`; next step `/add-game`.
+- `skin-designer` (`.claude/agents/`) — given ONE game id, audits and directly implements its 3 required skins (`clasico` default, `neon`, `retro`; WCAG contrast on dark bg) plus shared infra if missing. Skin is a global Arcade Vault setting in `localStorage` (`arcade-vault:skin`), selectable only from each game's canvas/HUD. No specs, no commits, works on current branch; runs lint/build; registry in `references/games-with-themes.md`.
+- `game-jam` (`.claude/agents/`) — given a theme, designs one original game and writes 3 complete Draft spec variants in `specs/game-jam/<id>/` (`spec-a.md`, `spec-b.md`, `spec-c.md`), modeled on specs 07–09. Read-only on `references/game-suggestions-todo.md`.
 
 ## Hooks
 

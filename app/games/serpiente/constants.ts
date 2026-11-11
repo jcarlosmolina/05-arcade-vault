@@ -29,11 +29,4 @@ export const MIN_TICK = 0.06;
 /** dt máximo por frame, en segundos (50 ms). */
 export const MAX_DT = 0.05;
 
-// ── Paleta ────────────────────────────────────────────────────────────────────
-export const COLORS = {
-  bg: '#05060f',
-  grid: 'rgba(0,245,255,0.06)',
-  green: '#00ff88',
-  greenDim: '#00cc6e',
-  eye: '#05060f',
-} as const;
+// Paleta: ver ./skins.ts (SKINS por skin).

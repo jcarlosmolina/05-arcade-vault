@@ -3,7 +3,6 @@
 
 import {
   CELL,
-  COLORS,
   COLS,
   H,
   INITIAL_LENGTH,
@@ -12,6 +11,7 @@ import {
   START_ROW,
   W,
 } from './constants';
+import type { SerpientePalette } from './skins';
 import { drawFruit, FRUIT_NAMES, type FruitName } from './sprites';
 
 export interface Cell {
@@ -65,14 +65,18 @@ export function spawnFruit(snake: readonly Cell[]): Fruit | null {
 }
 
 // ── Dibujo ────────────────────────────────────────────────────────────────────
+// Todos los colores salen de la paleta del skin activo (./skins.ts).
 
 /** Fondo oscuro con rejilla tenue de CELL px. */
-export function drawBoard(ctx: CanvasRenderingContext2D): void {
-  ctx.fillStyle = COLORS.bg;
+export function drawBoard(
+  ctx: CanvasRenderingContext2D,
+  p: SerpientePalette,
+): void {
+  ctx.fillStyle = p.bg;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.strokeStyle = COLORS.grid;
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = p.grid;
+  ctx.lineWidth = p.gridWidth;
   ctx.beginPath();
   for (let x = 0; x <= W; x += CELL) {
     ctx.moveTo(x + 0.5, 0);
@@ -86,35 +90,73 @@ export function drawBoard(ctx: CanvasRenderingContext2D): void {
 }
 
 /** Fruta con su sprite centrado en la celda, dentro de un cuadrado de 36×36. */
-export function drawFruitAt(ctx: CanvasRenderingContext2D, fruit: Fruit): void {
+export function drawFruitAt(
+  ctx: CanvasRenderingContext2D,
+  p: SerpientePalette,
+  fruit: Fruit,
+): void {
+  ctx.save();
+  if (p.fruitGlow > 0) {
+    ctx.shadowColor = p.fruitGlowColor;
+    ctx.shadowBlur = p.fruitGlow;
+  }
   drawFruit(
     ctx,
     fruit.type,
     fruit.col * CELL + CELL / 2,
     fruit.row * CELL + CELL / 2,
     36,
+    p.fruitTint,
   );
+  ctx.restore();
 }
 
-/** Serpiente neón con brillo. `dir` orienta los ojos de la cabeza. */
+/** Segmento de la serpiente en (x, y) con la forma y el borde del skin. */
+function drawSegment(
+  ctx: CanvasRenderingContext2D,
+  p: SerpientePalette,
+  x: number,
+  y: number,
+  size: number,
+): void {
+  if (p.segmentShape === 'round') {
+    ctx.beginPath();
+    ctx.roundRect(x, y, size, size, 8);
+    ctx.fill();
+    if (p.edge) ctx.stroke();
+  } else {
+    ctx.fillRect(x, y, size, size);
+    if (p.edge) ctx.strokeRect(x, y, size, size);
+  }
+}
+
+/** Serpiente con el estilo del skin. `dir` orienta los ojos de la cabeza. */
 export function drawSnake(
   ctx: CanvasRenderingContext2D,
+  p: SerpientePalette,
   snake: readonly Cell[],
   dir: Dir,
 ): void {
-  const pad = 2;
+  const pad = p.pad;
   const size = CELL - pad * 2;
 
   ctx.save();
-  ctx.shadowColor = COLORS.green;
-  ctx.shadowBlur = 12;
+  if (p.glow > 0) {
+    ctx.shadowColor = p.glowColor;
+    ctx.shadowBlur = p.glow;
+  }
+  if (p.edge) {
+    ctx.strokeStyle = p.edge;
+    ctx.lineWidth = p.edgeWidth;
+  }
 
-  // Cuerpo (de cola a cabeza), tono más tenue con alternancia sutil.
+  // Cuerpo (de cola a cabeza), alternancia por paridad del segmento.
   for (let i = snake.length - 1; i >= 1; i--) {
     const s = snake[i];
-    ctx.fillStyle = i % 2 === 0 ? COLORS.greenDim : COLORS.green;
-    ctx.globalAlpha = i % 2 === 0 ? 0.85 : 0.7;
-    ctx.fillRect(s.col * CELL + pad, s.row * CELL + pad, size, size);
+    const k = i % 2 === 0 ? 0 : 1;
+    ctx.fillStyle = p.body[k];
+    ctx.globalAlpha = p.bodyAlpha[k];
+    drawSegment(ctx, p, s.col * CELL + pad, s.row * CELL + pad, size);
   }
   ctx.globalAlpha = 1;
 
@@ -122,8 +164,8 @@ export function drawSnake(
   const head = snake[0];
   const hx = head.col * CELL;
   const hy = head.row * CELL;
-  ctx.fillStyle = COLORS.green;
-  ctx.fillRect(hx + pad, hy + pad, size, size);
+  ctx.fillStyle = p.head;
+  drawSegment(ctx, p, hx + pad, hy + pad, size);
   ctx.restore();
 
   // Ojos (sin brillo)
@@ -133,10 +175,28 @@ export function drawSnake(
   // Eje perpendicular a la dirección para separar los ojos.
   const px = -v.row * 7;
   const py = v.col * 7;
-  ctx.fillStyle = COLORS.eye;
+  ctx.fillStyle = p.eye;
   for (const sign of [-1, 1]) {
-    ctx.beginPath();
-    ctx.arc(cx + px * sign, cy + py * sign, 3, 0, Math.PI * 2);
-    ctx.fill();
+    const ex = cx + px * sign;
+    const ey = cy + py * sign;
+    if (p.eyeShape === 'square') {
+      ctx.fillRect(Math.round(ex) - 3, Math.round(ey) - 3, 6, 6);
+    } else {
+      ctx.beginPath();
+      ctx.arc(ex, ey, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+/** Scanlines tipo CRT sobre todo el canvas (solo si el skin las define). */
+export function drawScanlines(
+  ctx: CanvasRenderingContext2D,
+  p: SerpientePalette,
+): void {
+  if (!p.scanlines) return;
+  ctx.fillStyle = p.scanlines;
+  for (let y = 0; y < H; y += 3) {
+    ctx.fillRect(0, y, W, 1);
   }
 }
