@@ -33,6 +33,7 @@ There is no test runner configured in this repo yet.
 ## Agents
 
 - `game-planner` (`.claude/agents/`) — thinks/decides which new game fits the platform; memory of past suggestions in `references/game-suggestions-todo.md`; next step `/add-game`.
+- `game-jam` (`.claude/agents/`) — given a theme, designs one original game and writes 3 complete Draft spec variants in `specs/game-jam/<id>/` (`spec-a.md`, `spec-b.md`, `spec-c.md`), modeled on specs 07–09. Read-only on `references/game-suggestions-todo.md`.
 
 ## Hooks
 
